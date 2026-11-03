@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Desactiva</string>
+    <string name="share_target_label">Clean link</string>
+    <string name="process_text_label">Clean link</string>
+    <string name="interceptor_label">Desactiva (clean &amp; open)</string>
+    <string name="tile_label">Clean copied link</string>
+    <string name="clip_label">Clean link</string>
+    <string name="tagline">Remove trackers from links before you share them.</string>
+
+    <string name="clean_a_link">Clean a link</string>
+    <string name="input_label">Paste a link, or any text with links</string>
+    <string name="paste_and_clean">Paste &amp; clean</string>
+    <string name="clean">Clean</string>
+    <string name="clear">Clear</string>
+    <string name="copy">Copy</string>
+    <string name="share">Share</string>
+    <string name="open">Open</string>
+    <string name="copied">Copied</string>
+    <string name="cleaning">Cleaning…</string>
+
+    <string name="no_link_found">No link found.</string>
+    <string name="already_clean">Already clean: nothing to remove.</string>
+    <string name="link_cleaned">Link cleaned</string>
+    <plurals name="removed_trackers">
+        <item quantity="one">Removed %d tracker</item>
+        <item quantity="other">Removed %d trackers</item>
+    </plurals>
+    <string name="removed_list">Removed: %s</string>
+    <string name="expanded_note">Short link expanded to its real address.</string>
+    <string name="unwrapped_note">Redirect wrapper removed.</string>
+    <string name="short_not_expanded">This is a short link, so its trackers are hidden. Turn on “Expand short links” to clean where it leads.</string>
+    <string name="clipboard_empty">Nothing to clean on the clipboard.</string>
+    <string name="no_browser">No app found to open this link.</string>
+
+    <string name="ways_title">Ways to use it</string>
+    <string name="way_share_title">Share menu</string>
+    <string name="way_share_body">In X, Spotify, Instagram, Temu or any app, tap Share and choose “Clean link”.</string>
+    <string name="way_select_title">Text selection</string>
+    <string name="way_select_body">Select a link and pick “Clean link” from the menu. In a text box, the link is replaced in place.</string>
+    <string name="way_tile_title">Quick Settings tile</string>
+    <string name="way_tile_body">Copy a link, then tap the tile: the clean link replaces it on your clipboard.</string>
+    <string name="add_tile">Add tile</string>
+
+    <string name="settings_title">Settings</string>
+    <string name="setting_expand_title">Expand short links</string>
+    <string name="setting_expand_body">Follow t.co, temu.to, vm.tiktok.com and similar links to clean the real address. This contacts the short link\'s server; no cookies are sent.</string>
+    <string name="setting_copy_title">Copy and close</string>
+    <string name="setting_copy_body">When you share to Desactiva, copy the clean link right away instead of showing it.</string>
+    <string name="setting_intercept_title">Clean every link I open</string>
+    <string name="setting_intercept_body">Desactiva appears as a browser. Make it your default browser and each tapped link is cleaned, then opened in your real browser or app.</string>
+    <string name="open_default_apps">Choose default browser</string>
+
+    <string name="supported_title">Supported platforms</string>
+    <string name="supported_note">Plus utm_*, fbclid, gclid and other common trackers on every website.</string>
+</resources>

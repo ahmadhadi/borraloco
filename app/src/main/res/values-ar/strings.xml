@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="share_target_label">تنظيف الرابط</string>
+    <string name="process_text_label">تنظيف الرابط</string>
+    <string name="interceptor_label">Desactiva (تنظيف وفتح)</string>
+    <string name="tile_label">تنظيف الرابط المنسوخ</string>
+    <string name="clip_label">رابط نظيف</string>
+    <string name="tagline">أزل أدوات التتبع من الروابط قبل مشاركتها.</string>
+
+    <string name="clean_a_link">تنظيف رابط</string>
+    <string name="input_label">الصق رابطًا أو أي نص يحتوي على روابط</string>
+    <string name="paste_and_clean">لصق وتنظيف</string>
+    <string name="clean">تنظيف</string>
+    <string name="clear">مسح</string>
+    <string name="copy">نسخ</string>
+    <string name="share">مشاركة</string>
+    <string name="open">فتح</string>
+    <string name="copied">تم النسخ</string>
+    <string name="cleaning">جارٍ التنظيف…</string>
+
+    <string name="no_link_found">لم يُعثر على رابط.</string>
+    <string name="already_clean">الرابط نظيف بالفعل.</string>
+    <string name="link_cleaned">تم تنظيف الرابط</string>
+    <plurals name="removed_trackers">
+        <item quantity="zero">لم تتم إزالة أي متتبع</item>
+        <item quantity="one">تمت إزالة متتبع واحد</item>
+        <item quantity="two">تمت إزالة متتبعَين</item>
+        <item quantity="few">تمت إزالة %d متتبعات</item>
+        <item quantity="many">تمت إزالة %d متتبعًا</item>
+        <item quantity="other">تمت إزالة %d متتبع</item>
+    </plurals>
+    <string name="removed_list">المُزال: %s</string>
+    <string name="expanded_note">تم توسيع الرابط المختصر إلى عنوانه الحقيقي.</string>
+    <string name="unwrapped_note">تمت إزالة غلاف إعادة التوجيه.</string>
+    <string name="short_not_expanded">هذا رابط مختصر يخفي أدوات التتبع. فعّل «توسيع الروابط المختصرة» لتنظيف وجهته.</string>
+    <string name="clipboard_empty">لا يوجد ما يمكن تنظيفه في الحافظة.</string>
+    <string name="no_browser">لا يوجد تطبيق لفتح هذا الرابط.</string>
+
+    <string name="ways_title">طرق الاستخدام</string>
+    <string name="way_share_title">قائمة المشاركة</string>
+    <string name="way_share_body">في X أو Spotify أو Instagram أو Temu أو أي تطبيق، اضغط «مشاركة» واختر «تنظيف الرابط».</string>
+    <string name="way_select_title">تحديد النص</string>
+    <string name="way_select_body">حدّد رابطًا واختر «تنظيف الرابط» من القائمة. داخل مربع نص، يُستبدل الرابط مباشرة.</string>
+    <string name="way_tile_title">مربع الإعدادات السريعة</string>
+    <string name="way_tile_body">انسخ رابطًا ثم اضغط المربع: يحلّ الرابط النظيف محله في الحافظة.</string>
+    <string name="add_tile">إضافة المربع</string>
+
+    <string name="settings_title">الإعدادات</string>
+    <string name="setting_expand_title">توسيع الروابط المختصرة</string>
+    <string name="setting_expand_body">تتبُّع روابط مثل t.co وtemu.to وvm.tiktok.com لتنظيف العنوان الحقيقي. يتصل ذلك بخادم الرابط المختصر دون إرسال ملفات تعريف الارتباط.</string>
+    <string name="setting_copy_title">نسخ وإغلاق</string>
+    <string name="setting_copy_body">عند المشاركة إلى Desactiva، انسخ الرابط النظيف فورًا بدلًا من عرضه.</string>
+    <string name="setting_intercept_title">تنظيف كل رابط أفتحه</string>
+    <string name="setting_intercept_body">يظهر Desactiva كمتصفح. اجعله المتصفح الافتراضي فيُنظَّف كل رابط تضغطه ثم يُفتح في متصفحك أو التطبيق الأصلي.</string>
+    <string name="open_default_apps">اختيار المتصفح الافتراضي</string>
+
+    <string name="supported_title">المنصات المدعومة</string>
+    <string name="supported_note">بالإضافة إلى utm_* وfbclid وgclid وغيرها من المتتبعات الشائعة في كل المواقع.</string>
+</resources>

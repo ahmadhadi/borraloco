@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Only used to expand short links (t.co, temu.to, vm.tiktok.com…) when that setting is on. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- Lets us see installed browsers so cleaned links can be forwarded to one (Android 11+). -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data android:scheme="https" />
+        </intent>
+    </queries>
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.CleanLink">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Receives links from the Share menu and the text-selection menu. -->
+        <activity
+            android:name=".CleanActivity"
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:label="@string/share_target_label"
+            android:taskAffinity=""
+            android:theme="@style/Theme.CleanLink.Sheet">
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+            <intent-filter android:label="@string/process_text_label">
+                <action android:name="android.intent.action.PROCESS_TEXT" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity>
+
+        <!--
+          "Clean every link I open": when enabled from the app's settings, this makes the app
+          appear as a browser. Set it as the default browser and every tapped link is cleaned,
+          then handed to the real browser (or the platform's app). Disabled by default.
+        -->
+        <activity-alias
+            android:name=".LinkInterceptor"
+            android:enabled="false"
+            android:exported="true"
+            android:label="@string/interceptor_label"
+            android:targetActivity=".CleanActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="http" />
+                <data android:scheme="https" />
+            </intent-filter>
+        </activity-alias>
+
+        <!-- Opened by the Quick Settings tile: reads the clipboard once it has focus. -->
+        <activity
+            android:name=".ClipboardCleanActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:taskAffinity=""
+            android:theme="@style/Theme.CleanLink.Sheet" />
+
+        <service
+            android:name=".CleanClipboardTileService"
+            android:exported="true"
+            android:icon="@drawable/ic_tile"
+            android:label="@string/tile_label"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+    </application>
+</manifest>
