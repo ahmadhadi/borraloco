@@ -52,11 +52,11 @@ jobs:
           fi
           ./gradlew :app:assembleRelease
           mkdir -p dist
-          cp app/build/outputs/apk/release/app-release.apk "dist/Desactiva-${{ steps.version.outputs.tag }}.apk"
+          cp app/build/outputs/apk/release/app-release.apk "dist/BorraLoco-${{ steps.version.outputs.tag }}.apk"
 
       - uses: actions/upload-artifact@v4
         with:
-          name: Desactiva-apk
+          name: BorraLoco-apk
           path: dist/*.apk
 
       - name: Check whether this version is already released
@@ -77,7 +77,7 @@ jobs:
         with:
           tag_name: ${{ steps.version.outputs.tag }}
           target_commitish: ${{ github.sha }}
-          name: Desactiva ${{ steps.version.outputs.tag }}
+          name: BorraLoco ${{ steps.version.outputs.tag }}
           body_path: .github/release-notes.md
           files: dist/*.apk
 

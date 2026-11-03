@@ -2,7 +2,7 @@
 <resources>
     <string name="share_target_label">تنظيف الرابط</string>
     <string name="process_text_label">تنظيف الرابط</string>
-    <string name="interceptor_label">Desactiva (تنظيف وفتح)</string>
+    <string name="interceptor_label">BorraLoco (تنظيف وفتح)</string>
     <string name="tile_label">تنظيف الرابط المنسوخ</string>
     <string name="clip_label">رابط نظيف</string>
     <string name="tagline">أزل أدوات التتبع من الروابط قبل مشاركتها.</string>
@@ -49,9 +49,9 @@
     <string name="setting_expand_title">توسيع الروابط المختصرة</string>
     <string name="setting_expand_body">تتبُّع روابط مثل t.co وtemu.to وvm.tiktok.com لتنظيف العنوان الحقيقي. يتصل ذلك بخادم الرابط المختصر دون إرسال ملفات تعريف الارتباط.</string>
     <string name="setting_copy_title">نسخ وإغلاق</string>
-    <string name="setting_copy_body">عند المشاركة إلى Desactiva، انسخ الرابط النظيف فورًا بدلًا من عرضه.</string>
+    <string name="setting_copy_body">عند المشاركة إلى BorraLoco، انسخ الرابط النظيف فورًا بدلًا من عرضه.</string>
     <string name="setting_intercept_title">تنظيف كل رابط أفتحه</string>
-    <string name="setting_intercept_body">يظهر Desactiva كمتصفح. اجعله المتصفح الافتراضي فيُنظَّف كل رابط تضغطه ثم يُفتح في متصفحك أو التطبيق الأصلي.</string>
+    <string name="setting_intercept_body">يظهر BorraLoco كمتصفح. اجعله المتصفح الافتراضي فيُنظَّف كل رابط تضغطه ثم يُفتح في متصفحك أو التطبيق الأصلي.</string>
     <string name="open_default_apps">اختيار المتصفح الافتراضي</string>
 
     <string name="supported_title">المنصات المدعومة</string>

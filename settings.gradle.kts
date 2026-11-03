@@ -20,5 +20,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Desactiva"
+rootProject.name = "BorraLoco"
 include(":app", ":core")

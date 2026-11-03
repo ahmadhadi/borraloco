@@ -1,4 +1,4 @@
-# Desactiva
+# BorraLoco
 
 An Android app that removes tracking from links before you share them: X/Twitter, Spotify,
 Instagram, Threads, Snapchat, TikTok, YouTube, Temu, SHEIN, AliExpress, Amazon, Facebook,
@@ -26,7 +26,7 @@ https://www.temu.com/earbuds-g-601099527781234.html?_x_sessn_id=…&refer_page_n
 | **Share menu** | In any app tap *Share → Clean link*. A sheet shows the clean link with Copy / Share / Open. |
 | **Text selection** | Select a link, choose *Clean link*. In an editable text box the link is replaced in place. |
 | **Quick Settings tile** | Copy a link, tap the tile: the clean link replaces it on the clipboard. |
-| **Clean every link I open** (optional) | Desactiva registers as a browser. Set it as the default browser and every tapped link is cleaned, then forwarded to the real browser, or to the platform's own app. |
+| **Clean every link I open** (optional) | BorraLoco registers as a browser. Set it as the default browser and every tapped link is cleaned, then forwarded to the real browser, or to the platform's own app. |
 | **In the app** | Paste any text; every link in it is cleaned. |
 
 Short links (`t.co`, `temu.to`, `vm.tiktok.com`, `spotify.link`, `snapchat.com/t/…`,
@@ -38,7 +38,7 @@ to keep the app fully offline.
 ## Open and run
 
 1. Install **Android Studio** (current stable).
-2. *File → Open* and select this `Desactiva` folder. Let Gradle sync.
+2. *File → Open* and select this `BorraLoco` folder. Let Gradle sync.
    If Studio offers to upgrade the Android Gradle Plugin or library versions, accept.
 3. Plug in a phone with USB debugging on (or start an emulator) and press **Run ▶**.
 
