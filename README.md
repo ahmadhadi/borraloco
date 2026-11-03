@@ -94,13 +94,11 @@ classes. Check its licence (LGPL-3.0) fits how you plan to distribute the app.
 
 ## Releases
 
-Pushing a tag builds the APK on GitHub Actions and publishes it as a release:
+GitHub Actions builds the APK on every push to `main`. When `versionName` in
+`app/build.gradle.kts` has no release yet, it publishes release `v<versionName>` with the APK
+attached. To ship an update, bump `versionCode` and `versionName`, then push.
 
-```
-git tag v1.1 && git push origin v1.1
-```
-
-Bump `versionCode` / `versionName` in `app/build.gradle.kts` first. By default the APK is signed
+By default the APK is signed
 with a throwaway debug key, so a new release won't install over an old one without uninstalling
 first. To sign every release with the same key, create a keystore once
 (*Build → Generate Signed App Bundle → Create new*) and add these repository secrets:
