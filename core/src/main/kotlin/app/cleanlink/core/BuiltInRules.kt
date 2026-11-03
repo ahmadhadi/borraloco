@@ -30,7 +30,7 @@ object BuiltInRules {
         SiteRule(
             "X / Twitter",
             hosts = listOf("x.com", "twitter.com", "fxtwitter.com", "vxtwitter.com", "fixupx.com"),
-            removeParams = listOf("s", "t", "ref_src", "ref_url", "src", "cn", "cxt", "refsrc"),
+            removeParams = listOf("a", "s", "t", "ref_src", "ref_url", "src", "cn", "cxt", "refsrc"),
         ),
         SiteRule(
             "Spotify",

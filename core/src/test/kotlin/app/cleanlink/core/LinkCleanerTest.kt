@@ -30,6 +30,10 @@ class LinkCleanerTest {
             "https://twitter.com/NASA/status/1",
         )
         assertCleans("https://mobile.twitter.com/a/status/1?s=19", "https://mobile.twitter.com/a/status/1")
+        assertCleans(
+            "https://x.com/paolino/status/2117667400485048364?a=UFSpH1v-fiW6xy_mCpg",
+            "https://x.com/paolino/status/2117667400485048364",
+        )
         assertUnchanged("https://x.com/search?q=android&f=live")
     }
 

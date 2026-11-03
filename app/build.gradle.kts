@@ -14,8 +14,8 @@ android {
         applicationId = "com.ahmadhadi.desactiva"
         minSdk = 26
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "1.1"
     }
 
     // Release signing comes from environment variables (set by the GitHub workflow from repository
