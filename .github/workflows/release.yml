@@ -1,11 +1,13 @@
 name: Build & release APK
 
 # Runs the tests and builds the app on every push.
-# Pushing a tag such as v1.0 also publishes a GitHub Release with the APK attached.
+# Publishing a GitHub Release (or pushing a tag such as v1.0) attaches the APK to that release.
 on:
   push:
     branches: [main]
     tags: ['v*']
+  release:
+    types: [published]
   pull_request:
   workflow_dispatch:
 
