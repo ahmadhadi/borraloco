@@ -156,6 +156,10 @@ class LinkCleanerTest {
             "https://www.aliexpress.com/item/1005006123456789.html",
         )
         assertCleans(
+            "https://aliexpress.com/item/1005011924447121.html?spreadCode=TCs3RGhHOWVTTjdib3BNN3BJUTdFOTFqMlM3NEJwNS9Qcm8xWGZmODdjTWpmdlBzNkVmWTlBPT0&platform=AE",
+            "https://aliexpress.com/item/1005011924447121.html",
+        )
+        assertCleans(
             "https://ar.shein.com/Dress-p-12345678.html?src_identifier=on%3DIMAGE&src_module=ad&src_tab_page_id=page_home&mallCode=1&scici=abc",
             "https://ar.shein.com/Dress-p-12345678.html",
         )

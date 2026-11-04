@@ -106,7 +106,7 @@ object BuiltInRules {
                 "gatewayAdapt", "_randl_*", "gps-id", "utparam*", "pdp_*", "btsid", "ws_ab_test",
                 "curPageLogUid", "srcSns", "spreadType", "bizType", "social_params", "tt",
                 "aff_fcid", "aff_fsk", "aff_platform", "aff_trace_key", "businessType", "afSmartRedirect",
-                "_t", "mb", "invitationCode", "shareId", "image",
+                "_t", "mb", "invitationCode", "shareId", "image", "spreadCode", "platform",
             ),
         ),
         SiteRule(
