@@ -66,6 +66,28 @@ https://www.trendyol.sa/redtag/men-grey-5-pocket-straight-fit-denim-jeans-p-1157
 | `adjust_t`, `adjust_campaign`, `adjust_adgroup`, `adjust_creative`, `adjust_tracker_limit` | Adjust: app-install attribution. `adjust_campaign` includes the share date and country. | remove |
 | `utm_source`, `utm_medium`, `utm_campaign` | Marketing tags: "shared, free product link, for product X". | remove |
 
+### Trendyol as an Adjust tracker link (`*.adj.st`)
+
+The Trendyol app can also share a link on Adjust's tracking domain instead of `trendyol.sa`:
+
+```
+https://p8zh.adj.st/25l4ri4o_25q1bx32?adjust_t=…&Page=Product&ContentId=1157982162&MerchantId=1184610
+  &link_userID=208888978&timestamp=1793788420&adjust_deeplink=ty%3A%2F%2F…&adjust_redirect=https%3A%2F%2Fwww.trendyol.sa%2FREDTAG%2F…
+```
+
+It is a redirect wrapper holding the same tracking twice more:
+
+| Parameter | What it is | Action |
+|---|---|---|
+| `adjust_redirect` | **The real product page** on the website (itself full of tags). | unwrap, then clean as usual |
+| `adjust_deeplink` | The same product as an in-app `ty://` link. | dropped with the wrapper |
+| `Page`, `CampaignId`, `BoutiqueId`, `ContentId`, `MerchantId`, `PdpSource`, `FilterOverPriceListings`, `Channel`, `Culture` | Instructions for the app to open the product (and `Culture` = sharer's country/language). | dropped with the wrapper |
+| `adjust_t`, `adjust_*`, `link_userID`, `timestamp`, `link_contentid` | Same trackers as above, in the wrapper. | dropped with the wrapper |
+
+BorraLoco unwraps `adjust_redirect`, then cleans the Trendyol page, so the result is the same
+plain `trendyol.sa` link as above. The path in the tracker link (`/25l4ri4o_25q1bx32`) is Adjust's
+campaign tracker ID, shared by everyone who gets a link from the same share campaign.
+
 ## AliExpress
 
 | Parameter | What it is | Action |

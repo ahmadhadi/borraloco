@@ -248,6 +248,10 @@ object BuiltInRules {
         RedirectRule("Snapchat", listOf("snapchat.com"), "/redirect/?", listOf("url", "u")),
         RedirectRule("TikTok", listOf("tiktok.com"), "/link/v2", listOf("target")),
         RedirectRule("Yandex", listOf("yandex.*"), "/clck/.*", listOf("url")),
+        // Adjust (app-install attribution) tracker links, used by Trendyol and many other apps.
+        // The real web page is in adjust_redirect; adjust_deeplink is the in-app version.
+        RedirectRule("Adjust", listOf("adj.st"), "/.*", listOf("adjust_redirect", "adjust_fallback")),
+        RedirectRule("Adjust", listOf("app.adjust.com"), "/.*", listOf("redirect", "fallback")),
     )
 
     private val SHORTENERS = listOf(
