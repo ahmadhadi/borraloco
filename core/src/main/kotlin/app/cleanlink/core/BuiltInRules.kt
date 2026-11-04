@@ -95,7 +95,7 @@ object BuiltInRules {
             removeParams = listOf(
                 "src_identifier", "src_module", "src_tab_page_id", "scici", "ici", "share_from",
                 "url_from", "onelink", "requestId", "pageListType", "share_type", "share_source",
-                "sharelink", "ref", "lang_source", "mallCode", "imgRatio",
+                "sharelink", "ref", "lang_source", "mallCode", "imgRatio", "shc",
             ),
         ),
         SiteRule(

@@ -299,6 +299,27 @@ class LinkCleanerTest {
         )
     }
 
+    @Test fun sheinShareCode() {
+        // Offline / expansion off: the short link stays, but its share code is dropped.
+        assertCleans(
+            "https://onelink.shein.com/59/675y9f5gzvvo?shc=2_RsQbUYtk2rS",
+            "https://onelink.shein.com/59/675y9f5gzvvo",
+        )
+        // Expansion on: the redirect is followed and the product page is cleaned.
+        val expanding = LinkCleaner(
+            resolver = RedirectResolver {
+                if (it.startsWith("https://onelink.shein.com/")) {
+                    "https://ar.shein.com/Dress-p-12345678.html?shc=2_RsQbUYtk2rS&url_from=share&src_module=share"
+                } else {
+                    null
+                }
+            },
+        )
+        val r = expanding.clean("https://onelink.shein.com/59/675y9f5gzvvo?shc=2_RsQbUYtk2rS", expandShortLinks = true)
+        assertEquals("https://ar.shein.com/Dress-p-12345678.html", r.cleaned)
+        assertTrue(r.expanded)
+    }
+
     @Test fun shortLinkLeftAloneWhenExpansionOffOrFails() {
         val failing = LinkCleaner(resolver = RedirectResolver { null })
         val r = failing.clean("https://t.co/abc", expandShortLinks = true)
