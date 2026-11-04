@@ -4,6 +4,9 @@
     <!-- Only used to expand short links (t.co, temu.to, vm.tiktok.com…) when that setting is on. -->
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <!-- In-app updates: lets the app open the installer for an APK it downloaded from GitHub Releases. -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+
     <!-- Lets us see installed browsers so cleaned links can be forwarded to one (Android 11+). -->
     <queries>
         <intent>
@@ -89,5 +92,16 @@
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
             </intent-filter>
         </service>
+
+        <!-- Shares the downloaded update APK with the system installer. -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.updates"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/update_paths" />
+        </provider>
     </application>
 </manifest>

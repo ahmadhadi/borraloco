@@ -28,6 +28,7 @@ https://www.temu.com/earbuds-g-601099527781234.html?_x_sessn_id=…&refer_page_n
 | **Quick Settings tile** | Copy a link, tap the tile: the clean link replaces it on the clipboard. |
 | **Clean every link I open** (optional) | BorraLoco registers as a browser. Set it as the default browser and every tapped link is cleaned, then forwarded to the real browser, or to the platform's own app. |
 | **In the app** | Paste any text; every link in it is cleaned. |
+| **Updates** | On launch the app checks GitHub Releases and offers to download and install a new version. |
 
 Short links (`t.co`, `temu.to`, `vm.tiktok.com`, `spotify.link`, `snapchat.com/t/…`,
 `amzn.to`, `bit.ly`…) hide their trackers, so with **Expand short links** on (the default) the
@@ -98,13 +99,15 @@ GitHub Actions builds the APK on every push to `main`. When `versionName` in
 `app/build.gradle.kts` has no release yet, it publishes release `v<versionName>` with the APK
 attached. To ship an update, bump `versionCode` and `versionName`, then push.
 
-By default the APK is signed
-with a throwaway debug key, so a new release won't install over an old one without uninstalling
-first. To sign every release with the same key, create a keystore once
-(*Build → Generate Signed App Bundle → Create new*) and add these repository secrets:
-`CLEANLINK_KEYSTORE_BASE64` (the .jks file, base64-encoded), `CLEANLINK_KEYSTORE_PASSWORD`,
-`CLEANLINK_KEY_ALIAS`, `CLEANLINK_KEY_PASSWORD`. Keep a backup of that keystore: losing it means
-users can't update.
+Every release is signed with the same key, so the app can update itself: when it opens it
+checks GitHub Releases and offers to download and install a newer version (Settings →
+*Check for updates automatically* / *Check now*).
+
+The key lives in two repository secrets (*Settings → Secrets and variables → Actions*):
+`BORRALOCO_KEYSTORE_BASE64` (the .jks file, base64-encoded) and `BORRALOCO_SIGNING_PASSWORD`
+(its store and key password; the key alias is `borraloco`). Without them the workflow still
+builds, but publishes no release. Keep a private backup of the key and its password: losing
+them means installed copies can't be updated.
 
 ## Publishing on Google Play
 

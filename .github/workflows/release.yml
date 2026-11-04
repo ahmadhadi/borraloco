@@ -38,17 +38,24 @@ jobs:
         run: ./gradlew :core:test
 
       - name: Build release APK
+        id: build
         env:
-          # Optional: add these repository secrets to sign with your own key.
-          # Without them the APK is signed with a throwaway debug key.
-          CLEANLINK_KEYSTORE_BASE64: ${{ secrets.CLEANLINK_KEYSTORE_BASE64 }}
-          CLEANLINK_KEYSTORE_PASSWORD: ${{ secrets.CLEANLINK_KEYSTORE_PASSWORD }}
-          CLEANLINK_KEY_ALIAS: ${{ secrets.CLEANLINK_KEY_ALIAS }}
-          CLEANLINK_KEY_PASSWORD: ${{ secrets.CLEANLINK_KEY_PASSWORD }}
+          # Two repository secrets hold the signing key, so every release is signed with the same
+          # key and updates install over the previous version. Without them the APK is still built
+          # (to check the code compiles) but no release is published.
+          KEYSTORE_BASE64: ${{ secrets.BORRALOCO_KEYSTORE_BASE64 }}
+          SIGNING_PASSWORD: ${{ secrets.BORRALOCO_SIGNING_PASSWORD }}
         run: |
-          if [ -n "$CLEANLINK_KEYSTORE_BASE64" ]; then
-            echo "$CLEANLINK_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.jks"
+          if [ -n "$KEYSTORE_BASE64" ] && [ -n "$SIGNING_PASSWORD" ]; then
+            echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.jks"
             export CLEANLINK_KEYSTORE="$RUNNER_TEMP/release.jks"
+            export CLEANLINK_KEYSTORE_PASSWORD="$SIGNING_PASSWORD"
+            export CLEANLINK_KEY_PASSWORD="$SIGNING_PASSWORD"
+            export CLEANLINK_KEY_ALIAS=borraloco
+            echo "signed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning::Signing secrets are not set: building a debug-signed APK and skipping the release."
+            echo "signed=false" >> "$GITHUB_OUTPUT"
           fi
           ./gradlew :app:assembleRelease
           mkdir -p dist
@@ -61,7 +68,7 @@ jobs:
 
       - name: Check whether this version is already released
         id: released
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && steps.build.outputs.signed == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -82,7 +89,7 @@ jobs:
           files: dist/*.apk
 
       - name: Attach APK to tagged release
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: startsWith(github.ref, 'refs/tags/v') && steps.build.outputs.signed == 'true'
         uses: softprops/action-gh-release@v2
         with:
           files: dist/*.apk

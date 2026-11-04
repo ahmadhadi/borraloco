@@ -19,6 +19,11 @@ class AppSettings(private val context: Context) {
         get() = prefs.getBoolean(KEY_COPY_AND_CLOSE, false)
         set(value) = prefs.edit { putBoolean(KEY_COPY_AND_CLOSE, value) }
 
+    /** Look for a new release on GitHub each time the app is opened. */
+    var autoCheckUpdates: Boolean
+        get() = prefs.getBoolean(KEY_AUTO_UPDATE, true)
+        set(value) = prefs.edit { putBoolean(KEY_AUTO_UPDATE, value) }
+
     /**
      * "Clean every link I open": enables the `LinkInterceptor` activity-alias that makes the app
      * show up as a browser. Stored as the component's enabled state, so there is one source of truth.
@@ -39,6 +44,7 @@ class AppSettings(private val context: Context) {
     companion object {
         private const val KEY_EXPAND = "expand_short_links"
         private const val KEY_COPY_AND_CLOSE = "copy_and_close"
+        private const val KEY_AUTO_UPDATE = "auto_check_updates"
 
         /** The alias is declared relative to the namespace, which can differ from the applicationId. */
         val INTERCEPTOR_CLASS: String =

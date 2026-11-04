@@ -14,12 +14,12 @@ android {
         applicationId = "com.ahmadhadi.borraloco"
         minSdk = 26
         targetSdk = 36
-        versionCode = 4
-        versionName = "1.3"
+        versionCode = 5
+        versionName = "1.4"
     }
 
-    // Release signing comes from environment variables (set by the GitHub workflow from repository
-    // secrets). Without them, release builds fall back to the debug key so they still install.
+    // Release signing comes from environment variables, set by the GitHub workflow after it decrypts
+    // signing/release.jks.enc. Without them, release builds fall back to the debug key so they still install.
     val releaseKeystore = System.getenv("CLEANLINK_KEYSTORE")
     signingConfigs {
         if (releaseKeystore != null) {

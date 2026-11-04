@@ -44,24 +44,40 @@ import androidx.compose.ui.unit.dp
 import app.cleanlink.core.TextCleanResult
 import app.cleanlink.ui.CleanLinkTheme
 import app.cleanlink.ui.CleanResultView
+import app.cleanlink.ui.UpdateController
+import app.cleanlink.ui.UpdateDialog
+import app.cleanlink.ui.UpdateState
+import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
+    private lateinit var updates: UpdateController
+
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
+        updates = UpdateController(this, lifecycleScope)
+        // Check once per launch (not again on rotation).
+        if (savedInstanceState == null && AppSettings(this).autoCheckUpdates) updates.check(manual = false)
+
         setContent {
             CleanLinkTheme {
                 Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-                    HomeScreen()
+                    HomeScreen(updates)
+                    UpdateDialog(updates)
                 }
             }
         }
     }
+
+    override fun onResume() {
+        super.onResume()
+        updates.onResume()
+    }
 }
 
 @Composable
-private fun HomeScreen() {
+private fun HomeScreen(updates: UpdateController) {
     val context = LocalContext.current
     val settings = remember { AppSettings(context) }
     val scope = rememberCoroutineScope()
@@ -179,6 +195,27 @@ private fun HomeScreen() {
                 TextButton(onClick = {
                     context.startActivity(Intent(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS))
                 }) { Text(stringResource(R.string.open_default_apps)) }
+            }
+
+            HorizontalDivider()
+            var autoUpdate by remember { mutableStateOf(settings.autoCheckUpdates) }
+            SettingSwitch(
+                title = stringResource(R.string.setting_updates_title),
+                body = stringResource(R.string.setting_updates_body),
+                checked = autoUpdate,
+                onChange = { autoUpdate = it; settings.autoCheckUpdates = it },
+            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    stringResource(R.string.current_version, remember { Updater.currentVersion(context) }),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.weight(1f),
+                )
+                val checking = updates.state == UpdateState.Checking
+                OutlinedButton(onClick = { updates.check(manual = true) }, enabled = !checking) {
+                    Text(stringResource(if (checking) R.string.update_checking else R.string.update_check_now))
+                }
             }
         }
 

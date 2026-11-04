@@ -57,4 +57,25 @@
 
     <string name="supported_title">المنصات المدعومة</string>
     <string name="supported_note">بالإضافة إلى utm_* وfbclid وgclid وغيرها من المتتبعات الشائعة في كل المواقع.</string>
+
+    <!-- Updates -->
+    <string name="setting_updates_title">التحقق من التحديثات تلقائيًا</string>
+    <string name="setting_updates_body">عند كل فتح لـ BorraLoco، ابحث عن إصدار جديد على GitHub واعرض تثبيته.</string>
+    <string name="current_version">الإصدار %1$s</string>
+    <string name="update_check_now">تحقق الآن</string>
+    <string name="update_checking">جارٍ التحقق…</string>
+    <string name="update_none">لديك أحدث إصدار.</string>
+    <string name="update_check_failed">تعذّر التحقق من التحديثات. تحقق من الاتصال.</string>
+    <string name="update_available_title">يتوفر BorraLoco %1$s</string>
+    <string name="update_available_body">الإصدار المثبت لديك هو %1$s.</string>
+    <string name="update_download_install">تنزيل وتثبيت</string>
+    <string name="update_later">لاحقًا</string>
+    <string name="update_downloading">جارٍ تنزيل %1$s…</string>
+    <string name="update_ready_title">تم تنزيل BorraLoco %1$s</string>
+    <string name="update_ready_body">اضغط «تثبيت» للتحديث.</string>
+    <string name="update_install">تثبيت</string>
+    <string name="update_failed_title">فشل التنزيل</string>
+    <string name="update_failed_body">تعذّر تنزيل التحديث. تحقق من الاتصال وحاول مجددًا.</string>
+    <string name="update_retry">إعادة المحاولة</string>
+    <string name="update_allow_installs">اسمح لـ BorraLoco بتثبيت التطبيقات، ثم عُد لإكمال التحديث.</string>
 </resources>
