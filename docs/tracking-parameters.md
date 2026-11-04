@@ -39,6 +39,33 @@ a personal tracker, and removing it would send recipients to a different store.
 Short links: `temu.to/…` and `share.temu.com/…` are expanded first (they hide all of the above),
 then cleaned.
 
+## Trendyol
+
+Hosts: `trendyol.com`, `trendyol.sa`, `trendyol.ae` and other country stores. Short links: `ty.gl`.
+
+Example (share from the Trendyol app, Saudi store, 2026-11-04):
+
+```
+https://www.trendyol.sa/redtag/men-grey-5-pocket-straight-fit-denim-jeans-p-1157982162
+  ?boutiqueId=61&merchantId=1184610&adjust_t=25l4ri4o_25q1bx32&adjust_tracker_limit=999999999
+  &adjust_creative=all&utm_campaign=1157982162&timestamp=1793787818&link_contentid=1157982162
+  &adjust_campaign=product_free_2026114_SA&utm_term=208888978&utm_source=share
+  &adjust_adgroup=all&utm_medium=product_free&link_userID=208888978
+→ https://www.trendyol.sa/redtag/men-grey-5-pocket-straight-fit-denim-jeans-p-1157982162?boutiqueId=61&merchantId=1184610
+```
+
+| Parameter | What it is | Action |
+|---|---|---|
+| `merchantId` | The seller whose offer is shown (same product can have several sellers, at different prices). | **keep** |
+| `boutiqueId` | The campaign "boutique" the product is listed under (`61` = the default one). | keep |
+| `q`, `qt`, `st`, `os` and filter parameters | Search terms and filters on search pages. | keep |
+| `link_userID` | **The sharer's Trendyol account ID.** | remove |
+| `utm_term` | Here it's the same account ID again (`208888978`). | remove |
+| `link_contentid` | The product ID, repeated (already in the path). | remove |
+| `timestamp` | When the link was shared (Unix time). | remove |
+| `adjust_t`, `adjust_campaign`, `adjust_adgroup`, `adjust_creative`, `adjust_tracker_limit` | Adjust: app-install attribution. `adjust_campaign` includes the share date and country. | remove |
+| `utm_source`, `utm_medium`, `utm_campaign` | Marketing tags: "shared, free product link, for product X". | remove |
+
 ## AliExpress
 
 | Parameter | What it is | Action |

@@ -174,6 +174,19 @@ class LinkCleanerTest {
         )
     }
 
+    @Test fun trendyol() {
+        // Real share from the Trendyol app (Saudi store).
+        assertCleans(
+            "https://www.trendyol.sa/redtag/men-grey-5-pocket-straight-fit-denim-jeans-p-1157982162?boutiqueId=61&merchantId=1184610&adjust_t=25l4ri4o_25q1bx32&adjust_tracker_limit=999999999&adjust_creative=all&utm_campaign=1157982162&timestamp=1793787818&link_contentid=1157982162&adjust_campaign=product_free_2026114_SA&utm_term=208888978&utm_source=share&adjust_adgroup=all&utm_medium=product_free&link_userID=208888978",
+            "https://www.trendyol.sa/redtag/men-grey-5-pocket-straight-fit-denim-jeans-p-1157982162?boutiqueId=61&merchantId=1184610",
+        )
+        assertCleans(
+            "https://www.trendyol.com/sr?q=jeans&qt=jeans&st=jeans&os=1&adjust_t=abc&link_userID=1",
+            "https://www.trendyol.com/sr?q=jeans&qt=jeans&st=jeans&os=1",
+        )
+        assertTrue(cleaner.isShortLink("https://ty.gl/abc123"))
+    }
+
     // ---- Redirect wrappers -----------------------------------------------------------------
 
     @Test fun unwrapsFacebookRedirect() {

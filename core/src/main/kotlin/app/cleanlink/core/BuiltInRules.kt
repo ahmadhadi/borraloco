@@ -101,6 +101,18 @@ object BuiltInRules {
                 "sharelink", "ref", "lang_source", "mallCode", "imgRatio", "shc",
             ),
         ),
+        // Notes: docs/tracking-parameters.md. Keeps merchantId/boutiqueId (they pick the seller
+        // and campaign whose price is shown) and search/filter parameters.
+        SiteRule(
+            "Trendyol",
+            hosts = listOf("trendyol.*"),
+            removeParams = listOf(
+                "link_*",        // link_userID = the sharer's account ID, link_contentid
+                "adjust_*",      // Adjust app-install attribution
+                "timestamp",     // when the share was made
+                "sav", "pi", "fromDeeplink", "deeplink_source", "channelId",
+            ),
+        ),
         SiteRule(
             "AliExpress",
             hosts = listOf("aliexpress.com", "aliexpress.us", "aliexpress.ru"),
@@ -264,6 +276,7 @@ object BuiltInRules {
         ShortenerRule("s.click.aliexpress.com"),
         ShortenerRule("a.aliexpress.com"),
         ShortenerRule("click.aliexpress.com"),
+        ShortenerRule("ty.gl"),           // Trendyol
         ShortenerRule("shein.top"),
         ShortenerRule("onelink.shein.com"),
         ShortenerRule("api-shein.shein.com", "/h5/sharejump/.*"),

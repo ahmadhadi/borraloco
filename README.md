@@ -1,7 +1,7 @@
 # BorraLoco
 
 An Android app that removes tracking from links before you share them: X/Twitter, Spotify,
-Instagram, Threads, Snapchat, TikTok, YouTube, Temu, SHEIN, AliExpress, Amazon, Facebook,
+Instagram, Threads, Snapchat, TikTok, YouTube, Temu, SHEIN, AliExpress, Trendyol, Amazon, Facebook,
 Reddit, LinkedIn, Pinterest and more, plus `utm_*`, `fbclid`, `gclid` and other common
 trackers on every website.
 
