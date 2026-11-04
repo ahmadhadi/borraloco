@@ -160,6 +160,10 @@ class LinkCleanerTest {
             "https://aliexpress.com/item/1005011924447121.html",
         )
         assertCleans(
+            "https://aliexpress.com/item/1005007038245470.html?channel=nnGlobal&sourceType=570",
+            "https://aliexpress.com/item/1005007038245470.html",
+        )
+        assertCleans(
             "https://ar.shein.com/Dress-p-12345678.html?src_identifier=on%3DIMAGE&src_module=ad&src_tab_page_id=page_home&mallCode=1&scici=abc",
             "https://ar.shein.com/Dress-p-12345678.html",
         )
