@@ -107,6 +107,11 @@ class LinkCleanerTest {
             "https://www.temu.com/goods.html?goods_id=601099527781234&_bg_fs=1&_p_rfs=1&_x_ads_channel=share",
             "https://www.temu.com/goods.html?goods_id=601099527781234",
         )
+        // Real "Copy link" share from the Temu app (Saudi store). See docs/tracking-parameters.md.
+        assertCleans(
+            "https://www.temu.com/sa-en/goods.html?_bg_fs=1&goods_id=601100218100590&share_img=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Fopen%2F0189276f3ee74de4a50705d3663a4a85-goods.jpeg&top_gallery_url=https%3A%2F%2Fimg.kwcdn.com%2Fproduct%2Fopen%2F0189276f3ee74de4a50705d3663a4a85-goods.jpeg&refer_share_id=6089wl9yqx4chjd3db8qmudhe7nv60gp&refer_share_channel=copy_link&_oak_page_source=417&_oak_region=174&locale_override=174~en~SAR",
+            "https://www.temu.com/sa-en/goods.html?goods_id=601100218100590",
+        )
     }
 
     @Test fun amazon() {

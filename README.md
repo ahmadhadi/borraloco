@@ -78,6 +78,9 @@ app/                          Android app (Jetpack Compose, Material 3)
 
 ## Adding or fixing a platform
 
+Notes on what each tracking parameter means, per platform, are in
+[docs/tracking-parameters.md](docs/tracking-parameters.md). Add to them as you go.
+
 Edit `core/.../BuiltInRules.kt`:
 
 - **Tracking parameters** → add a `SiteRule` with `removeParams` (wildcards allowed: `"pf_rd_*"`).

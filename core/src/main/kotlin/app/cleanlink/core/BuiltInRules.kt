@@ -84,6 +84,9 @@ object BuiltInRules {
                 "cbrd", "ucbcb", "persist_app", "noapp", "has_verified",
             ),
         ),
+        // Temu adds a different set of share/session tags almost every release, so it uses an
+        // allow-list: only the parameters below survive. Notes on what we've seen:
+        // docs/tracking-parameters.md
         SiteRule(
             "Temu",
             hosts = listOf("temu.com"),
