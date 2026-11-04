@@ -33,7 +33,7 @@ import app.cleanlink.ui.DelayedProgress
 
 /**
  * Entry point for links coming from other apps:
- * - Share menu (ACTION_SEND)              → shows a bottom sheet with the clean link
+ * - Share menu (ACTION_SEND)              → copies the clean link and reopens the share menu
  * - Text selection (ACTION_PROCESS_TEXT)  → replaces the text in place when the field is editable
  * - Link interception (ACTION_VIEW)       → cleans, then opens the link in the real browser/app
  */
@@ -59,8 +59,7 @@ class CleanActivity : ComponentActivity() {
                 LaunchedEffect(Unit) {
                     // Show the sheet straight away only when we will end up showing a result;
                     // otherwise just a small spinner if the work takes a moment.
-                    val headless = input.mode == Mode.INTERCEPT || input.mode == Mode.REPLACE_TEXT ||
-                        AppSettings(this@CleanActivity).copyAndClose
+                    val headless = input.mode != Mode.SHOW_TEXT
                     if (!headless) showSheet = true
                     val r = Cleaner.cleanText(this@CleanActivity, input.text)
                     if (handleWithoutUi(input, r)) {
@@ -91,14 +90,22 @@ class CleanActivity : ComponentActivity() {
             Toast.makeText(this, Cleaner.summary(this, r), Toast.LENGTH_SHORT).show()
             true
         }
-        Mode.SHARE, Mode.SHOW_TEXT -> {
-            if (AppSettings(this).copyAndClose && r.hasLinks) {
-                LinkActions.copy(this, r.cleanedText, toast = Cleaner.summary(this, r))
-                true
+        Mode.SHARE -> {
+            if (r.hasLinks) {
+                // Copy first, so the clean link is on the clipboard whatever the user picks next.
+                LinkActions.copy(
+                    this,
+                    r.cleanedText,
+                    toast = getString(R.string.copied_summary, Cleaner.summary(this, r)),
+                )
+                // Then reopen the share menu with the clean text, unless the user only wants a copy.
+                if (!AppSettings(this).copyAndClose) LinkActions.share(this, r.cleanedText)
             } else {
-                false
+                Toast.makeText(this, R.string.no_link_found, Toast.LENGTH_SHORT).show()
             }
+            true
         }
+        Mode.SHOW_TEXT -> false
     }
 
     @OptIn(ExperimentalMaterial3Api::class)

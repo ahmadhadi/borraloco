@@ -23,7 +23,7 @@ https://www.temu.com/earbuds-g-601099527781234.html?_x_sessn_id=…&refer_page_n
 
 | Entry point | How it works |
 |---|---|
-| **Share menu** | In any app tap *Share → Clean link*. A sheet shows the clean link with Copy / Share / Open. |
+| **Share menu** | In any app tap *Share → Clean link*. The clean link is copied to the clipboard and the share menu opens again, so you can send it to any app. (Turn on *Only copy* in Settings to skip the share menu.) |
 | **Text selection** | Select a link, choose *Clean link*. In an editable text box the link is replaced in place. |
 | **Quick Settings tile** | Copy a link, tap the tile: the clean link replaces it on the clipboard. |
 | **Clean every link I open** (optional) | BorraLoco registers as a browser. Set it as the default browser and every tapped link is cleaned, then forwarded to the real browser, or to the platform's own app. |
