@@ -13,7 +13,7 @@ class HttpRedirectResolverTest {
 
     private lateinit var server: HttpServer
     private lateinit var base: String
-    private val resolver = HttpRedirectResolver(timeoutMs = 3_000)
+    private val resolver = HttpRedirectResolver(timeoutMs = 3_000, allowPrivateHosts = true)
 
     @Before fun start() {
         server = HttpServer.create(InetSocketAddress("127.0.0.1", 0), 0)
@@ -68,6 +68,13 @@ class HttpRedirectResolverTest {
     }
 
     @Test fun returnsNullWhenUnreachable() {
-        assertNull(HttpRedirectResolver(timeoutMs = 500).nextHop("http://127.0.0.1:1/x"))
+        assertNull(HttpRedirectResolver(timeoutMs = 500, allowPrivateHosts = true).nextHop("http://127.0.0.1:1/x"))
+    }
+
+    @Test fun refusesToRequestLocalAddressesByDefault() {
+        // The server below is reachable and would redirect, but by default it must not even be asked.
+        assertNull(HttpRedirectResolver(timeoutMs = 3_000).nextHop("$base/short"))
+        assertNull(HttpRedirectResolver().nextHop("http://192.168.1.1/admin"))
+        assertNull(HttpRedirectResolver().nextHop("http://localhost:8080/x"))
     }
 }
