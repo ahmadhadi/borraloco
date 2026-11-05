@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import app.cleanlink.core.TextCleanResult
 import app.cleanlink.ui.CleanLinkTheme
 import app.cleanlink.ui.CleanResultView
+import app.cleanlink.ui.InspectView
 import app.cleanlink.ui.UpdateController
 import app.cleanlink.ui.UpdateDialog
 import app.cleanlink.ui.UpdateState
@@ -85,15 +86,26 @@ private fun HomeScreen(updates: UpdateController) {
     var input by remember { mutableStateOf("") }
     var result by remember { mutableStateOf<TextCleanResult?>(null) }
     var cleaning by remember { mutableStateOf(false) }
+    var inspect by remember { mutableStateOf<InspectOutcome?>(null) }
+    var inspecting by remember { mutableStateOf(false) }
 
     fun clean() {
         if (input.isBlank()) return
         cleaning = true
         result = null
+        inspecting = false
         scope.launch {
             result = Cleaner.cleanText(context, input)
             cleaning = false
         }
+    }
+
+    fun inspectLink() {
+        if (input.isBlank()) return
+        inspecting = true
+        inspect = null
+        result = null
+        scope.launch { inspect = Inspector.inspect(context, input) }
     }
 
     Column(
@@ -117,7 +129,7 @@ private fun HomeScreen(updates: UpdateController) {
         Section(stringResource(R.string.clean_a_link)) {
             OutlinedTextField(
                 value = input,
-                onValueChange = { input = it; result = null },
+                onValueChange = { input = it; result = null; inspecting = false },
                 label = { Text(stringResource(R.string.input_label)) },
                 minLines = 3,
                 modifier = Modifier.fillMaxWidth(),
@@ -134,11 +146,21 @@ private fun HomeScreen(updates: UpdateController) {
                 Button(onClick = { clean() }, enabled = input.isNotBlank() && !cleaning) {
                     Text(stringResource(R.string.clean))
                 }
+                OutlinedButton(onClick = { inspectLink() }, enabled = input.isNotBlank()) {
+                    Text(stringResource(R.string.inspect))
+                }
                 if (input.isNotEmpty()) {
-                    TextButton(onClick = { input = ""; result = null }) { Text(stringResource(R.string.clear)) }
+                    TextButton(onClick = { input = ""; result = null; inspecting = false }) { Text(stringResource(R.string.clear)) }
                 }
             }
-            if (cleaning || result != null) {
+            if (inspecting) {
+                HorizontalDivider()
+                InspectView(
+                    outcome = inspect,
+                    onCopy = { LinkActions.copy(context, it) },
+                    onOpen = { LinkActions.open(context, it) },
+                )
+            } else if (cleaning || result != null) {
                 HorizontalDivider()
                 CleanResultView(
                     result = result,
@@ -172,12 +194,19 @@ private fun HomeScreen(updates: UpdateController) {
             var expand by remember { mutableStateOf(settings.expandShortLinks) }
             var copyAndClose by remember { mutableStateOf(settings.copyAndClose) }
             var intercept by remember { mutableStateOf(settings.interceptLinks) }
+            var onlineSafety by remember { mutableStateOf(settings.onlineSafetyCheck) }
 
             SettingSwitch(
                 title = stringResource(R.string.setting_expand_title),
                 body = stringResource(R.string.setting_expand_body),
                 checked = expand,
                 onChange = { expand = it; settings.expandShortLinks = it },
+            )
+            SettingSwitch(
+                title = stringResource(R.string.setting_online_title),
+                body = stringResource(R.string.setting_online_body),
+                checked = onlineSafety,
+                onChange = { onlineSafety = it; settings.onlineSafetyCheck = it },
             )
             SettingSwitch(
                 title = stringResource(R.string.setting_copy_title),
