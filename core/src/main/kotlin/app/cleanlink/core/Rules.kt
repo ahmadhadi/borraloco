@@ -52,12 +52,15 @@ class SiteRule(
     keepOnly: Set<String>? = null,
     /** Regex replacements applied to the path, e.g. Amazon's `/ref=sr_1_1`. */
     val pathRewrites: List<Pair<Regex, String>> = emptyList(),
+    /** When set, the rule only applies to URLs whose path matches (e.g. product pages only). */
+    val onlyOnPaths: Regex? = null,
 ) {
     val hosts = hosts.map(::HostPattern)
     val removeParams = removeParams.map(::ParamPattern)
     val keepOnly: Set<String>? = keepOnly?.map { it.lowercase() }?.toSet()
 
-    fun appliesTo(host: String) = hosts.any { it.matches(host) }
+    fun appliesTo(host: String, path: String = "") =
+        hosts.any { it.matches(host) } && (onlyOnPaths == null || onlyOnPaths.containsMatchIn(path))
 
     fun removes(param: String): Boolean =
         (keepOnly != null && param.lowercase() !in keepOnly) || removeParams.any { it.matches(param) }
@@ -106,7 +109,7 @@ class RuleSet(
 ) {
     val globalParams = globalParams.map(::ParamPattern)
 
-    fun sitesFor(host: String) = sites.filter { it.appliesTo(host) }
+    fun sitesFor(host: String, path: String = "") = sites.filter { it.appliesTo(host, path) }
     fun isShortLink(url: ParsedUrl) = shorteners.any { it.matches(url) }
-    fun isKnownSite(url: ParsedUrl) = sites.any { it.appliesTo(url.host) }
+    fun isKnownSite(url: ParsedUrl) = sites.any { it.appliesTo(url.host, url.path) }
 }

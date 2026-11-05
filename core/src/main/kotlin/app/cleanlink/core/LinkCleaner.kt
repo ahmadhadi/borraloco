@@ -118,7 +118,7 @@ class LinkCleaner(
     }
 
     private fun strip(url: ParsedUrl, removed: MutableList<String>): ParsedUrl {
-        val sites = rules.sitesFor(url.host)
+        val sites = rules.sitesFor(url.host, url.path)
 
         var path = url.path
         for (site in sites) {

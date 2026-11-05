@@ -51,13 +51,13 @@ https://www.trendyol.sa/redtag/men-grey-5-pocket-straight-fit-denim-jeans-p-1157
   &adjust_creative=all&utm_campaign=1157982162&timestamp=1793787818&link_contentid=1157982162
   &adjust_campaign=product_free_2026114_SA&utm_term=208888978&utm_source=share
   &adjust_adgroup=all&utm_medium=product_free&link_userID=208888978
-→ https://www.trendyol.sa/redtag/men-grey-5-pocket-straight-fit-denim-jeans-p-1157982162?boutiqueId=61&merchantId=1184610
+→ https://www.trendyol.sa/redtag/men-grey-5-pocket-straight-fit-denim-jeans-p-1157982162
 ```
 
 | Parameter | What it is | Action |
 |---|---|---|
-| `merchantId` | The seller whose offer is shown (same product can have several sellers, at different prices). | **keep** |
-| `boutiqueId` | The campaign "boutique" the product is listed under (`61` = the default one). | keep |
+| `merchantId` | The seller whose offer is shown first (a product can have several sellers, at different prices). The same for everyone who views that offer, so it doesn't identify the sharer. | **remove on product pages** (path ends `-p-<number>`); keep elsewhere |
+| `boutiqueId` | The campaign "boutique" the product is listed under (`61` = the default one in every link we've seen). Not personal. | remove on product pages; keep elsewhere |
 | `q`, `qt`, `st`, `os` and filter parameters | Search terms and filters on search pages. | keep |
 | `link_userID` | **The sharer's Trendyol account ID.** | remove |
 | `utm_term` | Here it's the same account ID again (`208888978`). | remove |
@@ -65,6 +65,13 @@ https://www.trendyol.sa/redtag/men-grey-5-pocket-straight-fit-denim-jeans-p-1157
 | `timestamp` | When the link was shared (Unix time). | remove |
 | `adjust_t`, `adjust_campaign`, `adjust_adgroup`, `adjust_creative`, `adjust_tracker_limit` | Adjust: app-install attribution. `adjust_campaign` includes the share date and country. | remove |
 | `utm_source`, `utm_medium`, `utm_campaign` | Marketing tags: "shared, free product link, for product X". | remove |
+
+Why `merchantId` and `boutiqueId` are dropped on product pages: the product ID in the path
+(`-p-917780677`) is enough to open the page. Without them Trendyol shows its default offer for that
+product, which may be another seller's, possibly at a different price than the sharer saw. We
+chose the cleaner link; to keep the exact seller, delete the `Trendyol` product-page rule in
+`BuiltInRules.kt`. They are left alone on search and listing pages, where they can be real filters.
+Not checked against Trendyol's live site (unreachable from our build environment).
 
 ### Trendyol as an Adjust tracker link (`*.adj.st`)
 

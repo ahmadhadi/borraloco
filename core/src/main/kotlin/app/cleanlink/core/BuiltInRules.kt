@@ -113,6 +113,15 @@ object BuiltInRules {
                 "sav", "pi", "fromDeeplink", "deeplink_source", "channelId",
             ),
         ),
+        // On a product page (".../name-p-123456") the product ID in the path is all that's needed.
+        // merchantId / boutiqueId only pick which seller's offer is shown first, so they are
+        // dropped there; on search and listing pages they can be real filters, so they stay.
+        SiteRule(
+            "Trendyol",
+            hosts = listOf("trendyol.*"),
+            removeParams = listOf("merchantId", "boutiqueId"),
+            onlyOnPaths = Regex("-p-\\d+/?$"),
+        ),
         SiteRule(
             "AliExpress",
             hosts = listOf("aliexpress.com", "aliexpress.us", "aliexpress.ru"),

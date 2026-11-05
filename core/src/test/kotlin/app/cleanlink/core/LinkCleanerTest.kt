@@ -178,7 +178,7 @@ class LinkCleanerTest {
         // Real share from the Trendyol app (Saudi store).
         assertCleans(
             "https://www.trendyol.sa/redtag/men-grey-5-pocket-straight-fit-denim-jeans-p-1157982162?boutiqueId=61&merchantId=1184610&adjust_t=25l4ri4o_25q1bx32&adjust_tracker_limit=999999999&adjust_creative=all&utm_campaign=1157982162&timestamp=1793787818&link_contentid=1157982162&adjust_campaign=product_free_2026114_SA&utm_term=208888978&utm_source=share&adjust_adgroup=all&utm_medium=product_free&link_userID=208888978",
-            "https://www.trendyol.sa/redtag/men-grey-5-pocket-straight-fit-denim-jeans-p-1157982162?boutiqueId=61&merchantId=1184610",
+            "https://www.trendyol.sa/redtag/men-grey-5-pocket-straight-fit-denim-jeans-p-1157982162",
         )
         assertCleans(
             "https://www.trendyol.com/sr?q=jeans&qt=jeans&st=jeans&os=1&adjust_t=abc&link_userID=1",
@@ -191,15 +191,29 @@ class LinkCleanerTest {
             "https://p8zh.adj.st/25l4ri4o_25q1bx32?adjust_t=25l4ri4o_25q1bx32&Page=Product&CampaignId=61&BoutiqueId=61&ContentId=1157982162&MerchantId=1184610&PdpSource=seller_store&FilterOverPriceListings=false&Channel=International&Culture=en-SA-35&adjust_adgroup=all&adjust_campaign=product_free_2026114_SA&link_userID=208888978&adjust_creative=all&timestamp=1793788420&link_contentid=1157982162&adjust_deeplink=ty%3A%2F%2F%3FPage%3DProduct%26CampaignId%3D61%26BoutiqueId%3D61%26ContentId%3D1157982162%26MerchantId%3D1184610%26PdpSource%3Dseller_store%26FilterOverPriceListings%3Dfalse%26Channel%3DInternational%26Culture%3Den-SA-35%26adjust_t%3D25l4ri4o_25q1bx32%26adjust_tracker_limit%3D999999999%26adjust_adgroup%3Dall%26adjust_campaign%3Dproduct_free_2026114_SA%26utm_source%3Dshare%26utm_medium%3Dproduct_free%26link_userID%3D208888978%26adjust_creative%3Dall%26utm_term%3D208888978%26utm_campaign%3D1157982162%26timestamp%3D1793788420%26link_contentid%3D1157982162&adjust_redirect=https%3A%2F%2Fwww.trendyol.sa%2FREDTAG%2FMen-Grey-5-Pocket-Straight-Fit-Denim-Jeans-p-1157982162%3FboutiqueId%3D61%26merchantId%3D1184610%26adjust_t%3D25l4ri4o_25q1bx32%26adjust_tracker_limit%3D999999999%26adjust_campaign%3Dproduct_free_2026114_SA%26utm_source%3Dshare%26utm_medium%3Dproduct_free%26link_userID%3D208888978%26adjust_creative%3Dall%26utm_term%3D208888978%26utm_campaign%3D1157982162%26timestamp%3D1793788420%26link_contentid%3D1157982162%26adjust_adgroup%3Dall",
         )
         assertEquals(
-            "https://www.trendyol.sa/REDTAG/Men-Grey-5-Pocket-Straight-Fit-Denim-Jeans-p-1157982162?boutiqueId=61&merchantId=1184610",
+            "https://www.trendyol.sa/REDTAG/Men-Grey-5-Pocket-Straight-Fit-Denim-Jeans-p-1157982162",
             adjust.cleaned,
         )
         assertTrue(adjust.unwrapped)
     }
 
+    @Test fun trendyolProductPageDropsSellerAndBoutiqueIds() {
+        assertCleans(
+            "https://www.trendyol.sa/N-zone/Modern-Side-Table-with-Elegant-Design-and-Luxurious-Material-p-917780677?boutiqueId=61&merchantId=1107385",
+            "https://www.trendyol.sa/N-zone/Modern-Side-Table-with-Elegant-Design-and-Luxurious-Material-p-917780677",
+        )
+        // Same with the parameters in another order / case, and a trailing slash.
+        assertCleans(
+            "https://www.trendyol.com/brand/some-product-p-123/?MerchantId=9&boutiqueId=61&color=red",
+            "https://www.trendyol.com/brand/some-product-p-123/?color=red",
+        )
+        // Not a product page: these can be real filters, so they stay.
+        assertUnchanged("https://www.trendyol.sa/sr?q=table&boutiqueId=61&merchantId=1107385")
+    }
+
     @Test fun trendyolThroughRedirects() {
         val adjust = "https://p8zh.adj.st/25l4ri4o_25q1bx32?adjust_t=25l4ri4o_25q1bx32&Page=Product&CampaignId=61&BoutiqueId=61&ContentId=1157982162&MerchantId=1184610&PdpSource=seller_store&FilterOverPriceListings=false&Channel=International&Culture=en-SA-35&adjust_adgroup=all&adjust_campaign=product_free_2026114_SA&link_userID=208888978&adjust_creative=all&timestamp=1793788420&link_contentid=1157982162&adjust_deeplink=ty%3A%2F%2F%3FPage%3DProduct%26CampaignId%3D61%26BoutiqueId%3D61%26ContentId%3D1157982162%26MerchantId%3D1184610%26PdpSource%3Dseller_store%26FilterOverPriceListings%3Dfalse%26Channel%3DInternational%26Culture%3Den-SA-35%26adjust_t%3D25l4ri4o_25q1bx32%26adjust_tracker_limit%3D999999999%26adjust_adgroup%3Dall%26adjust_campaign%3Dproduct_free_2026114_SA%26utm_source%3Dshare%26utm_medium%3Dproduct_free%26link_userID%3D208888978%26adjust_creative%3Dall%26utm_term%3D208888978%26utm_campaign%3D1157982162%26timestamp%3D1793788420%26link_contentid%3D1157982162&adjust_redirect=https%3A%2F%2Fwww.trendyol.sa%2FREDTAG%2FMen-Grey-5-Pocket-Straight-Fit-Denim-Jeans-p-1157982162%3FboutiqueId%3D61%26merchantId%3D1184610%26adjust_t%3D25l4ri4o_25q1bx32%26adjust_tracker_limit%3D999999999%26adjust_campaign%3Dproduct_free_2026114_SA%26utm_source%3Dshare%26utm_medium%3Dproduct_free%26link_userID%3D208888978%26adjust_creative%3Dall%26utm_term%3D208888978%26utm_campaign%3D1157982162%26timestamp%3D1793788420%26link_contentid%3D1157982162%26adjust_adgroup%3Dall"
-        val product = "https://www.trendyol.sa/REDTAG/Men-Grey-5-Pocket-Straight-Fit-Denim-Jeans-p-1157982162?boutiqueId=61&merchantId=1184610"
+        val product = "https://www.trendyol.sa/REDTAG/Men-Grey-5-Pocket-Straight-Fit-Denim-Jeans-p-1157982162"
 
         fun cleanerFor(hops: Map<String, String>) = LinkCleaner(resolver = RedirectResolver { hops[it] })
 
