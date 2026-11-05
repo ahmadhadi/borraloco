@@ -197,6 +197,55 @@ class LinkCleanerTest {
         assertTrue(adjust.unwrapped)
     }
 
+    @Test fun trendyolThroughRedirects() {
+        val adjust = "https://p8zh.adj.st/25l4ri4o_25q1bx32?adjust_t=25l4ri4o_25q1bx32&Page=Product&CampaignId=61&BoutiqueId=61&ContentId=1157982162&MerchantId=1184610&PdpSource=seller_store&FilterOverPriceListings=false&Channel=International&Culture=en-SA-35&adjust_adgroup=all&adjust_campaign=product_free_2026114_SA&link_userID=208888978&adjust_creative=all&timestamp=1793788420&link_contentid=1157982162&adjust_deeplink=ty%3A%2F%2F%3FPage%3DProduct%26CampaignId%3D61%26BoutiqueId%3D61%26ContentId%3D1157982162%26MerchantId%3D1184610%26PdpSource%3Dseller_store%26FilterOverPriceListings%3Dfalse%26Channel%3DInternational%26Culture%3Den-SA-35%26adjust_t%3D25l4ri4o_25q1bx32%26adjust_tracker_limit%3D999999999%26adjust_adgroup%3Dall%26adjust_campaign%3Dproduct_free_2026114_SA%26utm_source%3Dshare%26utm_medium%3Dproduct_free%26link_userID%3D208888978%26adjust_creative%3Dall%26utm_term%3D208888978%26utm_campaign%3D1157982162%26timestamp%3D1793788420%26link_contentid%3D1157982162&adjust_redirect=https%3A%2F%2Fwww.trendyol.sa%2FREDTAG%2FMen-Grey-5-Pocket-Straight-Fit-Denim-Jeans-p-1157982162%3FboutiqueId%3D61%26merchantId%3D1184610%26adjust_t%3D25l4ri4o_25q1bx32%26adjust_tracker_limit%3D999999999%26adjust_campaign%3Dproduct_free_2026114_SA%26utm_source%3Dshare%26utm_medium%3Dproduct_free%26link_userID%3D208888978%26adjust_creative%3Dall%26utm_term%3D208888978%26utm_campaign%3D1157982162%26timestamp%3D1793788420%26link_contentid%3D1157982162%26adjust_adgroup%3Dall"
+        val product = "https://www.trendyol.sa/REDTAG/Men-Grey-5-Pocket-Straight-Fit-Denim-Jeans-p-1157982162?boutiqueId=61&merchantId=1184610"
+
+        fun cleanerFor(hops: Map<String, String>) = LinkCleaner(resolver = RedirectResolver { hops[it] })
+
+        // ty.gl short link -> Adjust tracker link -> product page.
+        val oneHop = cleanerFor(mapOf("https://ty.gl/abc123" to adjust))
+            .clean("https://ty.gl/abc123", expandShortLinks = true)
+        assertEquals(product, oneHop.cleaned)
+        assertTrue(oneHop.expanded)
+        assertTrue(oneHop.unwrapped)
+        assertFalse(oneHop.unexpandedShortLink)
+
+        // Two short-link hops before the Adjust link.
+        val twoHops = cleanerFor(mapOf("https://ty.gl/a" to "https://ty.gl/b", "https://ty.gl/b" to adjust))
+            .clean("https://ty.gl/a", expandShortLinks = true)
+        assertEquals(product, twoHops.cleaned)
+
+        // ty.gl straight to a tagged product or search page.
+        assertEquals(
+            "https://www.trendyol.com/sr?q=jeans",
+            cleanerFor(mapOf("https://ty.gl/s" to "https://www.trendyol.com/sr?q=jeans&adjust_t=x&link_userID=1&utm_source=share&timestamp=1"))
+                .clean("https://ty.gl/s", expandShortLinks = true).cleaned,
+        )
+
+        // Adjust link pasted directly (no network needed).
+        assertEquals(product, cleaner.clean(adjust).cleaned)
+
+        // Inside a share message, with text before and after the link.
+        assertEquals(
+            "Look at these jeans! $product \uD83D\uDE0D",
+            cleanerFor(mapOf("https://ty.gl/abc123" to adjust))
+                .cleanText("Look at these jeans! https://ty.gl/abc123 \uD83D\uDE0D", expandShortLinks = true).cleanedText,
+        )
+
+        // Expansion off, or the network failing: the short link is left alone and flagged.
+        val off = cleanerFor(mapOf("https://ty.gl/abc123" to adjust)).clean("https://ty.gl/abc123")
+        assertEquals("https://ty.gl/abc123", off.cleaned)
+        assertTrue(off.unexpandedShortLink)
+        val dead = cleanerFor(emptyMap()).clean("https://ty.gl/abc123", expandShortLinks = true)
+        assertEquals("https://ty.gl/abc123", dead.cleaned)
+        assertTrue(dead.unexpandedShortLink)
+
+        // A redirect loop between two short links must end.
+        cleanerFor(mapOf("https://ty.gl/x" to "https://ty.gl/y", "https://ty.gl/y" to "https://ty.gl/x"))
+            .clean("https://ty.gl/x", expandShortLinks = true)
+    }
+
     // ---- Redirect wrappers -----------------------------------------------------------------
 
     @Test fun unwrapsFacebookRedirect() {
