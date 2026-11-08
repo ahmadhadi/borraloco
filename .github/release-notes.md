@@ -7,3 +7,5 @@ BorraLoco removes tracking from links you share: X/Twitter, Spotify, Instagram, 
 - Select a link and pick **Clean link** from the menu
 - Add the **Quick Settings tile**: copy a link, tap the tile, the clean link replaces it on the clipboard
 - Optional: turn on **Clean every link I open** in the app's settings and set BorraLoco as your default browser
+
+**New in 1.9: Copy caption.** Paste an Instagram post/reel or TikTok video link into the app and tap **Copy caption**: the public caption is read from the platform and copied. Public posts only; only the clean post address is sent to Instagram/TikTok (no tracking, no login). The Share menu is unchanged.

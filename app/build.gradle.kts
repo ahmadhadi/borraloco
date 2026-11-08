@@ -14,8 +14,8 @@ android {
         applicationId = "com.ahmadhadi.borraloco"
         minSdk = 26
         targetSdk = 36
-        versionCode = 9
-        versionName = "1.8"
+        versionCode = 10
+        versionName = "1.9"
     }
 
     // Release signing comes from environment variables, set by the GitHub workflow after it decrypts

@@ -54,6 +54,7 @@
             </intent-filter>
         </activity>
 
+
         <!--
           "Clean every link I open": when enabled from the app's settings, this makes the app
           appear as a browser. Set it as the default browser and every tapped link is cleaned,
