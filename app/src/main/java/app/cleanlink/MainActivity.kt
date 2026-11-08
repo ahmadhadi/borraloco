@@ -57,6 +57,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         updates = UpdateController(this, lifecycleScope)
+        CaptionShortcut.publish(this)
         // Check once per launch (not again on rotation).
         if (savedInstanceState == null && AppSettings(this).autoCheckUpdates) updates.check(manual = false)
 

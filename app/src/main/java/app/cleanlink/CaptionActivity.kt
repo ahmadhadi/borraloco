@@ -32,32 +32,35 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import app.cleanlink.core.CaptionResult
-import app.cleanlink.core.InstagramCaptionFetcher
-import app.cleanlink.core.InstagramCaptions
+import app.cleanlink.core.CaptionFetcher
+import app.cleanlink.core.CaptionPlatform
 import app.cleanlink.core.UrlExtractor
 import app.cleanlink.ui.CleanLinkTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 /**
- * Share target "Copy Instagram caption": share an Instagram post or reel here and its public
- * caption is read from instagram.com, copied to the clipboard and shown.
+ * Share target "Copy caption": share an Instagram post/reel or a TikTok video here and its public
+ * caption is read from the platform, copied to the clipboard and shown.
  */
 class CaptionActivity : ComponentActivity() {
 
-    private val fetcher = InstagramCaptionFetcher()
+    private val fetcher = CaptionFetcher()
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val text = intent?.takeIf { it.action == Intent.ACTION_SEND }?.getStringExtra(Intent.EXTRA_TEXT).orEmpty()
-        val link = UrlExtractor.extract(text).firstOrNull { InstagramCaptions.parsePost(it) != null }
+        val link = UrlExtractor.extract(text).firstOrNull { CaptionFetcher.platformOf(it) != null }
         if (link == null) {
             Toast.makeText(this, R.string.caption_not_post, Toast.LENGTH_LONG).show()
             finish()
             return
         }
 
+        val platform = getString(
+            if (CaptionFetcher.platformOf(link) == CaptionPlatform.TIKTOK) R.string.platform_tiktok else R.string.platform_instagram,
+        )
         setContent {
             CleanLinkTheme {
                 var result by remember { mutableStateOf<CaptionResult?>(null) }
@@ -83,7 +86,7 @@ class CaptionActivity : ComponentActivity() {
                         verticalArrangement = Arrangement.spacedBy(12.dp),
                     ) {
                         Text(stringResource(R.string.caption_label), style = MaterialTheme.typography.titleLarge)
-                        Body(result)
+                        Body(result, platform)
                     }
                 }
             }
@@ -91,7 +94,7 @@ class CaptionActivity : ComponentActivity() {
     }
 
     @androidx.compose.runtime.Composable
-    private fun Body(result: CaptionResult?) {
+    private fun Body(result: CaptionResult?, platform: String) {
         when (result) {
             null -> Row(verticalAlignment = Alignment.CenterVertically) {
                 CircularProgressIndicator(Modifier.padding(end = 12.dp), strokeWidth = 2.dp)
@@ -108,24 +111,24 @@ class CaptionActivity : ComponentActivity() {
                     Button(onClick = { LinkActions.copy(this@CaptionActivity, result.caption); finish() }) { Text(stringResource(R.string.copy)) }
                     OutlinedButton(onClick = { LinkActions.share(this@CaptionActivity, result.caption); finish() }) { Text(stringResource(R.string.share)) }
                 }
-                if (result.truncatedMaybe) Note(R.string.caption_maybe_short)
-                Note(R.string.caption_privacy_note)
+                if (result.truncatedMaybe) Note(stringResource(R.string.caption_maybe_short))
+                Note(stringResource(R.string.caption_privacy_note, platform))
             }
-            CaptionResult.NoCaption -> Message(R.string.caption_none)
-            CaptionResult.LoginRequired -> Message(R.string.caption_login)
-            CaptionResult.NotAPost -> Message(R.string.caption_not_post)
-            CaptionResult.Failed -> Message(R.string.caption_failed)
+            CaptionResult.NoCaption -> Message(stringResource(R.string.caption_none), platform)
+            CaptionResult.LoginRequired -> Message(stringResource(R.string.caption_login, platform), platform)
+            CaptionResult.NotAPost -> Message(stringResource(R.string.caption_not_post), platform)
+            CaptionResult.Failed -> Message(stringResource(R.string.caption_failed, platform), platform)
         }
     }
 
     @androidx.compose.runtime.Composable
-    private fun Message(res: Int) {
-        Text(stringResource(res), style = MaterialTheme.typography.bodyLarge)
-        Note(R.string.caption_privacy_note)
+    private fun Message(text: String, platform: String) {
+        Text(text, style = MaterialTheme.typography.bodyLarge)
+        Note(stringResource(R.string.caption_privacy_note, platform))
     }
 
     @androidx.compose.runtime.Composable
-    private fun Note(res: Int) {
-        Text(stringResource(res), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    private fun Note(text: String) {
+        Text(text, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }

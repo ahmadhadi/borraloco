@@ -54,11 +54,12 @@
             </intent-filter>
         </activity>
 
-        <!-- Share target "Copy Instagram caption": reads a post's public caption and copies it. -->
+        <!-- Share target "Copy caption": reads a post's (Instagram) or video's (TikTok) public caption and copies it. -->
         <activity
             android:name=".CaptionActivity"
             android:excludeFromRecents="true"
             android:exported="true"
+            android:icon="@drawable/ic_caption_shortcut"
             android:label="@string/caption_label"
             android:taskAffinity=""
             android:theme="@style/Theme.CleanLink.Sheet">
@@ -67,6 +68,9 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="text/plain" />
             </intent-filter>
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
         </activity>
 
         <!--

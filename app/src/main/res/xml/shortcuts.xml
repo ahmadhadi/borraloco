@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Makes "Copy caption" a target of its own in the Share menu (Direct Share row), not just a sub-entry of BorraLoco. -->
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <share-target android:targetClass="app.cleanlink.CaptionActivity">
+        <data android:mimeType="text/plain" />
+        <category android:name="com.ahmadhadi.borraloco.category.COPY_CAPTION" />
+    </share-target>
+</shortcuts>
