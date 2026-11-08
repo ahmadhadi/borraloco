@@ -54,24 +54,6 @@
             </intent-filter>
         </activity>
 
-        <!-- Share target "Copy caption": reads a post's (Instagram) or video's (TikTok) public caption and copies it. -->
-        <activity
-            android:name=".CaptionActivity"
-            android:excludeFromRecents="true"
-            android:exported="true"
-            android:icon="@drawable/ic_caption_shortcut"
-            android:label="@string/caption_label"
-            android:taskAffinity=""
-            android:theme="@style/Theme.CleanLink.Sheet">
-            <intent-filter>
-                <action android:name="android.intent.action.SEND" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <data android:mimeType="text/plain" />
-            </intent-filter>
-            <meta-data
-                android:name="android.app.shortcuts"
-                android:resource="@xml/shortcuts" />
-        </activity>
 
         <!--
           "Clean every link I open": when enabled from the app's settings, this makes the app

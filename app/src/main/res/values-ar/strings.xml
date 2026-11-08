@@ -86,11 +86,11 @@
     <string name="caption_none">هذا المنشور بلا وصف.</string>
     <string name="caption_login">يطلب %1$s تسجيل الدخول لعرض هذا المنشور، لذا تعذرت قراءة الوصف. قد يكون المنشور خاصًا أو أن %1$s يرفض الطلب. لم نحاول تجاوز ذلك.</string>
     <string name="caption_failed">تعذرت قراءة الوصف. تحقق من اتصالك وحاول مجددًا؛ وقد يكون %1$s غيّر صفحاته.</string>
-    <string name="caption_not_post">شارك منشورًا أو ريلًا من إنستغرام أو فيديو من تيك توك لنسخ وصفه.</string>
+    <string name="caption_not_post">الصق منشورًا أو ريلًا من إنستغرام أو فيديو من تيك توك لنسخ وصفه.</string>
     <string name="caption_maybe_short">قد تظهر الأوصاف الطويلة مختصرة.</string>
     <string name="caption_privacy_note">تم الاتصال بـ %1$s لقراءة صفحة المنشور العامة. أُرسل عنوان المنشور النظيف فقط: بلا تتبع ولا تسجيل دخول ولا ملفات تعريف ارتباط.</string>
     <string name="way_caption_title">نسخ الأوصاف</string>
-    <string name="way_caption_body">في إنستغرام أو تيك توك، شارك منشورًا أو ريلًا أو فيديو واختر «نسخ الوصف». يُنسخ الوصف لتلصقه في أي مكان.</string>
+    <string name="way_caption_body">الصق رابط إنستغرام أو تيك توك في التطبيق واضغط «نسخ الوصف». يُنسخ الوصف لتلصقه في أي مكان.</string>
 
     <string name="platform_instagram">إنستغرام</string>
     <string name="platform_tiktok">تيك توك</string>

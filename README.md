@@ -26,7 +26,7 @@ https://www.temu.com/earbuds-g-601099527781234.html?_x_sessn_id=…&refer_page_n
 | **Share menu** | In any app tap *Share → Clean link*. The clean link is copied to the clipboard and the share menu opens again, so you can send it to any app. (Turn on *Only copy* in Settings to skip the share menu.) |
 | **Text selection** | Select a link, choose *Clean link*. In an editable text box the link is replaced in place. |
 | **Quick Settings tile** | Copy a link, tap the tile: the clean link replaces it on the clipboard. |
-| **Copy caption** | Share an Instagram post or reel, or a TikTok video, to "Copy caption": the public caption is read from the platform and copied. Public posts only. |
+| **Copy caption** | In the app, paste an Instagram post/reel or TikTok video link and tap "Copy caption": the public caption is read from the platform and copied. Public posts only. No extra Share-menu entry. |
 | **Clean every link I open** (optional) | BorraLoco registers as a browser. Set it as the default browser and every tapped link is cleaned, then forwarded to the real browser, or to the platform's own app. |
 | **In the app** | Paste any text; every link in it is cleaned. |
 | **Updates** | On launch the app checks GitHub Releases and offers to download and install a new version. |
@@ -72,7 +72,7 @@ app/                          Android app (Jetpack Compose, Material 3)
   CleanActivity.kt            Share / text-selection / link-interception entry point
   ClipboardCleanActivity.kt   Clipboard cleaning (opened by the tile)
   CleanClipboardTileService   Quick Settings tile
-  CaptionActivity.kt          "Copy caption" share target (Instagram, TikTok)
+  ui/CaptionView.kt           "Copy caption" result (Instagram, TikTok), shown in the main screen
   MainActivity.kt             Home screen: manual cleaning, how-to, settings
   LinkActions.kt              Copy / share / open (never loops back into the app)
   AppSettings.kt              Preferences; toggles the browser alias

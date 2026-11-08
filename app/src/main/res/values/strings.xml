@@ -83,11 +83,11 @@
     <string name="caption_none">This post has no caption.</string>
     <string name="caption_login">%1$s asks for a login to show this post, so the caption can\'t be read. The post may be private, or %1$s may be refusing the request. Nothing was done to get around that.</string>
     <string name="caption_failed">Couldn\'t read the caption. Check your connection and try again; %1$s may also have changed its pages.</string>
-    <string name="caption_not_post">Share an Instagram post or reel, or a TikTok video, to copy its caption.</string>
+    <string name="caption_not_post">Paste an Instagram post or reel, or a TikTok video, to copy its caption.</string>
     <string name="caption_maybe_short">Long captions can come out shortened.</string>
     <string name="caption_privacy_note">This contacted %1$s to read the post\'s public page. Only the clean post address was sent: no tracking, no login, no cookies.</string>
     <string name="way_caption_title">Copy captions</string>
-    <string name="way_caption_body">In Instagram or TikTok, share a post, reel or video and choose “Copy caption”. The caption is copied for you to paste anywhere.</string>
+    <string name="way_caption_body">Paste an Instagram or TikTok link into the app and tap “Copy caption”. The caption is copied for you to paste anywhere.</string>
 
     <string name="platform_instagram">Instagram</string>
     <string name="platform_tiktok">TikTok</string>

@@ -1,6 +1,6 @@
 # Copy caption (Instagram, TikTok)
 
-Share an Instagram post or reel, or a TikTok video, to **Copy caption** (it appears in the Android Share menu next to "Clean link", and as its own Direct Share tile once the app has been opened). The app reads the post's public page, copies the caption and shows it, with Copy and Share buttons.
+Paste an Instagram post/reel or TikTok video link into the BorraLoco app and tap **Copy caption**. The Share menu is unchanged: it only offers "Clean link". The app reads the post's public page, copies the caption and shows it, with Copy and Share buttons.
 
 ## How it works
 - `InstagramCaptions.parsePost` accepts only `/p/`, `/reel/`, `/reels/`, `/tv/` links on instagram.com / instagr.am. Anything else is not requested.
@@ -13,8 +13,8 @@ Share an Instagram post or reel, or a TikTok video, to **Copy caption** (it appe
 - The caption is read from TikTok's public **oEmbed** endpoint (`https://www.tiktok.com/oembed?url=<video>`, documented by TikTok; the caption is the `title` field). Only the clean video address is sent. If oEmbed gives nothing, the video page's embedded data is read as a fallback.
 - Not verified against live TikTok from the build environment (the oEmbed response shape is checked against TikTok's own documented example).
 
-## Share menu
-The "Copy caption" entry has its own name and icon and is also published as a sharing shortcut (`CaptionShortcut`, `res/xml/shortcuts.xml`) so phones that support Direct Share can show it as a separate tile. Android decides what the share sheet shows; some phones group an app's entries together.
+## Why it is not in the Share menu
+A separate Share-menu entry was tried. Samsung's share sheet (and others) groups all of an app's entries under one icon with a popup, and an app cannot turn that off, so "Copy caption" lives inside the app instead and the Share menu stays exactly as in v1.8.
 
 ## Limits (read before relying on it)
 - **Public posts only.** Private accounts and anything Instagram hides behind a login cannot be read.
