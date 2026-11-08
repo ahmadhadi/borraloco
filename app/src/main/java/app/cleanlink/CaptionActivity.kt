@@ -105,8 +105,8 @@ class CaptionActivity : ComponentActivity() {
                 )
                 SelectionContainer { Text(result.caption, style = MaterialTheme.typography.bodyLarge) }
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Button(onClick = { LinkActions.copy(this, result.caption); finish() }) { Text(stringResource(R.string.copy)) }
-                    OutlinedButton(onClick = { LinkActions.share(this, result.caption); finish() }) { Text(stringResource(R.string.share)) }
+                    Button(onClick = { LinkActions.copy(this@CaptionActivity, result.caption); finish() }) { Text(stringResource(R.string.copy)) }
+                    OutlinedButton(onClick = { LinkActions.share(this@CaptionActivity, result.caption); finish() }) { Text(stringResource(R.string.share)) }
                 }
                 if (result.truncatedMaybe) Note(R.string.caption_maybe_short)
                 Note(R.string.caption_privacy_note)
