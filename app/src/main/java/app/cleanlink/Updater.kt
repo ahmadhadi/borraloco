@@ -26,7 +26,7 @@ data class UpdateInfo(
 /** Checks GitHub Releases for a newer version, downloads its APK and hands it to the installer. */
 object Updater {
     /** GitHub keeps redirecting this after a repository rename. */
-    private const val LATEST_RELEASE = "https://api.github.com/repos/ahmadhadi/desactiva/releases/latest"
+    private const val LATEST_RELEASE = "https://api.github.com/repos/ahmadhadi/borraloco/releases/latest"
     private const val TIMEOUT_MS = 10_000
 
     fun currentVersion(context: Context): String =
