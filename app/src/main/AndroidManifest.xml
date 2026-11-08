@@ -54,6 +54,21 @@
             </intent-filter>
         </activity>
 
+        <!-- Share target "Copy Instagram caption": reads a post's public caption and copies it. -->
+        <activity
+            android:name=".CaptionActivity"
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:label="@string/caption_label"
+            android:taskAffinity=""
+            android:theme="@style/Theme.CleanLink.Sheet">
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity>
+
         <!--
           "Clean every link I open": when enabled from the app's settings, this makes the app
           appear as a browser. Set it as the default browser and every tapped link is cleaned,

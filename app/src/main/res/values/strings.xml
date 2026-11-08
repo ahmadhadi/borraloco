@@ -75,4 +75,17 @@
     <string name="update_failed_body">The update couldn’t be downloaded. Check your connection and try again.</string>
     <string name="update_retry">Retry</string>
     <string name="update_allow_installs">Allow BorraLoco to install apps, then come back to finish the update.</string>
+
+    <!-- Copy Instagram caption -->
+    <string name="caption_label">Copy Instagram caption</string>
+    <string name="caption_getting">Reading the caption…</string>
+    <string name="caption_copied">Caption copied</string>
+    <string name="caption_none">This post has no caption.</string>
+    <string name="caption_login">Instagram asks for a login to show this post, so the caption can\'t be read. The post may be private, or Instagram may be refusing the request. Nothing was done to get around that.</string>
+    <string name="caption_failed">Couldn\'t read the caption. Check your connection and try again; Instagram may also have changed its pages.</string>
+    <string name="caption_not_post">Share an Instagram post or reel link to copy its caption.</string>
+    <string name="caption_maybe_short">Long captions can come out shortened.</string>
+    <string name="caption_privacy_note">This contacted instagram.com to read the post\'s public page. Only the clean post address was sent: no tracking, no login, no cookies.</string>
+    <string name="way_caption_title">Instagram captions</string>
+    <string name="way_caption_body">In Instagram, share a post or reel and choose “Copy Instagram caption”. The caption is copied for you to paste anywhere.</string>
 </resources>

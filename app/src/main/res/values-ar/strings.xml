@@ -78,4 +78,17 @@
     <string name="update_failed_body">تعذّر تنزيل التحديث. تحقق من الاتصال وحاول مجددًا.</string>
     <string name="update_retry">إعادة المحاولة</string>
     <string name="update_allow_installs">اسمح لـ BorraLoco بتثبيت التطبيقات، ثم عُد لإكمال التحديث.</string>
+
+    <!-- Copy Instagram caption -->
+    <string name="caption_label">نسخ وصف انستغرام</string>
+    <string name="caption_getting">جارٍ قراءة الوصف…</string>
+    <string name="caption_copied">تم نسخ الوصف</string>
+    <string name="caption_none">هذا المنشور بلا وصف.</string>
+    <string name="caption_login">يطلب إنستغرام تسجيل الدخول لعرض هذا المنشور، لذا تعذرت قراءة الوصف. قد يكون المنشور خاصًا أو أن إنستغرام يرفض الطلب. لم نحاول تجاوز ذلك.</string>
+    <string name="caption_failed">تعذرت قراءة الوصف. تحقق من اتصالك وحاول مجددًا؛ وقد يكون إنستغرام غيّر صفحاته.</string>
+    <string name="caption_not_post">شارك رابط منشور أو ريل من إنستغرام لنسخ وصفه.</string>
+    <string name="caption_maybe_short">قد تظهر الأوصاف الطويلة مختصرة.</string>
+    <string name="caption_privacy_note">تم الاتصال بـ instagram.com لقراءة صفحة المنشور العامة. أُرسل عنوان المنشور النظيف فقط: بلا تتبع ولا تسجيل دخول ولا ملفات تعريف ارتباط.</string>
+    <string name="way_caption_title">أوصاف إنستغرام</string>
+    <string name="way_caption_body">في إنستغرام، شارك منشورًا أو ريلًا واختر «نسخ وصف انستغرام». يُنسخ الوصف لتلصقه في أي مكان.</string>
 </resources>

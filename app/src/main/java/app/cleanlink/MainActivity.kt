@@ -154,6 +154,7 @@ private fun HomeScreen(updates: UpdateController) {
             Way(stringResource(R.string.way_share_title), stringResource(R.string.way_share_body))
             Way(stringResource(R.string.way_select_title), stringResource(R.string.way_select_body))
             Way(stringResource(R.string.way_tile_title), stringResource(R.string.way_tile_body))
+            Way(stringResource(R.string.way_caption_title), stringResource(R.string.way_caption_body))
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 val tileLabel = stringResource(R.string.tile_label)
                 OutlinedButton(onClick = {
