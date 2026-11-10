@@ -91,4 +91,21 @@
 
     <string name="platform_instagram">Instagram</string>
     <string name="platform_tiktok">TikTok</string>
+
+    <!-- Expand link (beta) -->
+    <string name="expand">Expand</string>
+    <string name="expanding">Following the link…</string>
+    <string name="expand_no_redirects">This link doesn\'t redirect anywhere: it goes straight to its destination.</string>
+    <string name="chain_title">Where the link goes</string>
+    <string name="hop_start">Starts at</string>
+    <string name="hop_redirect">Redirects to</string>
+    <string name="hop_unwrapped">Leads to (inside the link)</string>
+    <string name="stop_not_web">Not a web link, so nothing was opened.</string>
+    <string name="stop_loop">Stopped: the link redirects in a circle.</string>
+    <string name="stop_too_many">Stopped: too many redirects.</string>
+    <string name="stop_private">Stopped: the next step points to your own network, so it was not requested.</string>
+    <string name="clean_destination">Final destination, cleaned</string>
+    <string name="expand_note">To follow the link this contacted its servers (and the servers it redirects through). Nothing else was sent anywhere.</string>
+    <string name="way_expand_title">Expand short links (beta)</string>
+    <string name="way_expand_body">Paste a short link (t.co, bit.ly…) and tap “Expand” to see every step it goes through and the real, cleaned destination.</string>
 </resources>

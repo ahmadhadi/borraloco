@@ -46,7 +46,9 @@ import app.cleanlink.ui.CleanLinkTheme
 import app.cleanlink.core.CaptionFetcher
 import app.cleanlink.core.CaptionResult
 import app.cleanlink.core.UrlExtractor
+import app.cleanlink.core.InspectResult
 import app.cleanlink.ui.CaptionView
+import app.cleanlink.ui.ExpandView
 import app.cleanlink.ui.CleanResultView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -93,6 +95,17 @@ private fun HomeScreen(updates: UpdateController) {
     var cleaning by remember { mutableStateOf(false) }
     var caption by remember { mutableStateOf<CaptionResult?>(null) }
     var captioning by remember { mutableStateOf(false) }
+    var expanded by remember { mutableStateOf<InspectResult?>(null) }
+    var expanding by remember { mutableStateOf(false) }
+
+    fun expand() {
+        if (input.isBlank()) return
+        expanding = true
+        expanded = null
+        result = null
+        captioning = false
+        scope.launch { expanded = Inspector.expand(input) }
+    }
     val captionFetcher = remember { CaptionFetcher() }
     // The first Instagram / TikTok post link in the box, if any: that is what "Copy caption" reads.
     val captionLink = remember(input) { UrlExtractor.extract(input).firstOrNull { CaptionFetcher.platformOf(it) != null } }
@@ -100,6 +113,7 @@ private fun HomeScreen(updates: UpdateController) {
     fun copyCaption() {
         val link = captionLink ?: return
         captioning = true
+        expanding = false
         caption = null
         result = null
         scope.launch {
@@ -115,6 +129,7 @@ private fun HomeScreen(updates: UpdateController) {
         cleaning = true
         result = null
         captioning = false
+        expanding = false
         scope.launch {
             result = Cleaner.cleanText(context, input)
             cleaning = false
@@ -142,7 +157,7 @@ private fun HomeScreen(updates: UpdateController) {
         Section(stringResource(R.string.clean_a_link)) {
             OutlinedTextField(
                 value = input,
-                onValueChange = { input = it; result = null; captioning = false },
+                onValueChange = { input = it; result = null; captioning = false; expanding = false },
                 label = { Text(stringResource(R.string.input_label)) },
                 minLines = 3,
                 modifier = Modifier.fillMaxWidth(),
@@ -160,15 +175,25 @@ private fun HomeScreen(updates: UpdateController) {
                     Text(stringResource(R.string.clean))
                 }
                 if (input.isNotEmpty()) {
-                    TextButton(onClick = { input = ""; result = null; captioning = false }) { Text(stringResource(R.string.clear)) }
+                    TextButton(onClick = { input = ""; result = null; captioning = false; expanding = false }) { Text(stringResource(R.string.clear)) }
                 }
+            }
+            OutlinedButton(onClick = { expand() }, enabled = input.isNotBlank() && (!expanding || expanded != null)) {
+                Text(stringResource(R.string.expand))
             }
             if (captionLink != null) {
                 OutlinedButton(onClick = { copyCaption() }, enabled = !captioning || caption != null) {
                     Text(stringResource(R.string.caption_label))
                 }
             }
-            if (captioning) {
+            if (expanding) {
+                HorizontalDivider()
+                ExpandView(
+                    result = expanded,
+                    onCopy = { LinkActions.copy(context, it) },
+                    onOpen = { LinkActions.open(context, it) },
+                )
+            } else if (captioning) {
                 HorizontalDivider()
                 CaptionView(
                     result = caption,
@@ -193,6 +218,7 @@ private fun HomeScreen(updates: UpdateController) {
             Way(stringResource(R.string.way_select_title), stringResource(R.string.way_select_body))
             Way(stringResource(R.string.way_tile_title), stringResource(R.string.way_tile_body))
             Way(stringResource(R.string.way_caption_title), stringResource(R.string.way_caption_body))
+            Way(stringResource(R.string.way_expand_title), stringResource(R.string.way_expand_body))
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 val tileLabel = stringResource(R.string.tile_label)
                 OutlinedButton(onClick = {

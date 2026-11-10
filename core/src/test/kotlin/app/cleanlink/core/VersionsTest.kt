@@ -19,4 +19,13 @@ class VersionsTest {
         assertFalse(Versions.isNewer("garbage", "1.3"))
         assertFalse(Versions.isNewer("", "1.3"))
     }
+
+    @Test fun preReleases() {
+        assertTrue(Versions.isNewer("1.10", "1.10-beta1")) // the final release replaces its beta
+        assertTrue(Versions.isNewer("v1.10-beta2", "1.10-beta1"))
+        assertFalse(Versions.isNewer("1.10-beta1", "1.10-beta2"))
+        assertFalse(Versions.isNewer("1.10-beta1", "1.10"))
+        assertFalse(Versions.isNewer("1.9", "1.10-beta1")) // the stable 1.9 is older than a 1.10 beta
+        assertTrue(Versions.isNewer("1.11", "1.10-beta3"))
+    }
 }

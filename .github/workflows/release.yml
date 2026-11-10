@@ -5,9 +5,13 @@ name: Build & release APK
 # creates the release v<versionName> with the APK attached. So to ship a new version:
 # bump versionCode + versionName, push to main. Done.
 # Pushing a v* tag or publishing a release by hand also attaches the APK.
+#
+# BETAS: a push to a beta/* branch whose versionName contains "-beta" (e.g. 1.10-beta1) publishes a
+# GitHub PRE-RELEASE instead. Pre-releases are never "latest", so the in-app updater (which reads
+# releases/latest) does not offer them to people on the stable version.
 on:
   push:
-    branches: [main]
+    branches: [main, 'beta/**']
     tags: ['v*']
   release:
     types: [published]
@@ -66,9 +70,19 @@ jobs:
           name: BorraLoco-apk
           path: dist/*.apk
 
+      - name: Is this version a beta?
+        id: kind
+        run: |
+          case "${{ steps.version.outputs.tag }}" in
+            *-beta*) echo "pre=true" >> "$GITHUB_OUTPUT" ;;
+            *) echo "pre=false" >> "$GITHUB_OUTPUT" ;;
+          esac
+
       - name: Check whether this version is already released
         id: released
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && steps.build.outputs.signed == 'true'
+        if: >-
+          github.event_name == 'push' && steps.build.outputs.signed == 'true' &&
+          (github.ref == 'refs/heads/main' || (startsWith(github.ref, 'refs/heads/beta/') && steps.kind.outputs.pre == 'true'))
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -85,7 +99,9 @@ jobs:
           tag_name: ${{ steps.version.outputs.tag }}
           target_commitish: ${{ github.sha }}
           name: BorraLoco ${{ steps.version.outputs.tag }}
-          body_path: .github/release-notes.md
+          body_path: ${{ steps.kind.outputs.pre == 'true' && '.github/release-notes-beta.md' || '.github/release-notes.md' }}
+          prerelease: ${{ steps.kind.outputs.pre == 'true' }}
+          make_latest: ${{ steps.kind.outputs.pre != 'true' }}
           files: dist/*.apk
 
       - name: Attach APK to tagged release

@@ -12,8 +12,21 @@ object Versions {
             val b = l.getOrElse(i) { 0 }
             if (a != b) return a > b
         }
-        return false
+        // Same numbers: a final release is newer than its own pre-release ("1.10" > "1.10-beta1"),
+        // and a later pre-release is newer than an earlier one ("1.10-beta2" > "1.10-beta1").
+        val rPre = preRelease(remote)
+        val lPre = preRelease(local)
+        return when {
+            lPre != null && rPre == null -> true
+            lPre != null && rPre != null -> (trailingNumber(rPre) ?: 0) > (trailingNumber(lPre) ?: 0)
+            else -> false
+        }
     }
+
+    private fun preRelease(version: String): String? =
+        version.trim().substringBefore('+').substringAfter('-', "").ifEmpty { null }
+
+    private fun trailingNumber(s: String): Int? = Regex("""(\d+)$""").find(s)?.groupValues?.get(1)?.toIntOrNull()
 
     private fun parts(version: String): List<Int>? {
         val core = version.trim().removePrefix("v").removePrefix("V").substringBefore('-').substringBefore('+')

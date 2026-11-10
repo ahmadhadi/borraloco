@@ -23,9 +23,15 @@ class HttpRedirectResolver(
     private val timeoutMs: Int = 6_000,
     private val maxBodyBytes: Int = 64 * 1024,
     private val userAgent: String = DEFAULT_USER_AGENT,
+    /** Off by default: a link must not be able to make the phone request localhost or a LAN device. */
+    private val allowPrivateHosts: Boolean = false,
 ) : RedirectResolver {
 
     override fun nextHop(url: String): String? {
+        if (!allowPrivateHosts) {
+            val host = ParsedUrl.parse(url)?.host ?: return null
+            if (PrivateHosts.isPrivate(host)) return null
+        }
         val viaHead = request(url, "HEAD")
         return when {
             viaHead is Hop.Redirect -> viaHead.location

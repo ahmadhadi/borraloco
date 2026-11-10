@@ -94,4 +94,21 @@
 
     <string name="platform_instagram">إنستغرام</string>
     <string name="platform_tiktok">تيك توك</string>
+
+    <!-- Expand link (beta) -->
+    <string name="expand">توسيع</string>
+    <string name="expanding">جارٍ تتبّع الرابط…</string>
+    <string name="expand_no_redirects">هذا الرابط لا يعيد التوجيه: يذهب مباشرة إلى وجهته.</string>
+    <string name="chain_title">إلى أين يذهب الرابط</string>
+    <string name="hop_start">يبدأ من</string>
+    <string name="hop_redirect">يحوّل إلى</string>
+    <string name="hop_unwrapped">يؤدي إلى (داخل الرابط)</string>
+    <string name="stop_not_web">ليس رابط ويب، لذا لم يُفتح شيء.</string>
+    <string name="stop_loop">توقف: الرابط يعيد التوجيه في حلقة.</string>
+    <string name="stop_too_many">توقف: عدد التحويلات كبير جدًا.</string>
+    <string name="stop_private">توقف: الخطوة التالية تشير إلى شبكتك، لذا لم تُطلب.</string>
+    <string name="clean_destination">الوجهة النهائية بعد التنظيف</string>
+    <string name="expand_note">لتتبّع الرابط تم الاتصال بخوادمه (والخوادم التي يمر بها). لم يُرسل أي شيء آخر.</string>
+    <string name="way_expand_title">توسيع الروابط المختصرة (تجريبي)</string>
+    <string name="way_expand_body">الصق رابطًا مختصرًا (t.co أو bit.ly…) واضغط «توسيع» لترى كل خطوة يمر بها والوجهة الحقيقية بعد التنظيف.</string>
 </resources>
