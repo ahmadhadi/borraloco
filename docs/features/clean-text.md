@@ -27,6 +27,10 @@ right-to-left text, ideographic variation selectors after CJK characters, no-bre
 and French-style punctuation, ideographic spaces in CJK text. **Two or more invisible characters in a row
 are never treated as legitimate** and are removed.
 
+Any other Unicode "format" character (category Cf, for example the Arabic number signs U+0600–0605 or the
+end-of-ayah mark U+06DD) is also kept by default, listed, and removed by **Remove these too**. That button
+therefore does what tools like cleanpaste.site do (strip every Cf character), minus the joiners that would break emoji and Persian words.
+
 Kept characters are **listed by code point** (for example `U+200F ×12`) so you can see exactly what is
 there, with a **Remove these too** button for people who want everything invisible gone. It removes
 bidirectional marks, no-break and CJK spaces; it still keeps emoji sequences, flags and joiners between

@@ -215,4 +215,14 @@ class TextCleanerTest {
         assertEquals(t, TextCleaner.clean(t, ScrubMode.STRICT).cleaned)
         assertTrue(hidden(t).findings.none { it.kind == MarkKind.KEPT_CHARS && it.detail!!.contains("FE0F") })
     }
+
+    @Test fun otherFormatCharactersAreListedAndStrictRemovesThem() {
+        val t = "\u0600123 \u06DD text \u070F"
+        val r = hidden(t)
+        assertEquals(t, r.cleaned)
+        val f = r.findings.single { it.kind == MarkKind.KEPT_CHARS }
+        assertEquals(3, f.count)
+        assertEquals("123  text ", TextCleaner.clean(t, ScrubMode.STRICT).cleaned)
+        assertFalse(TextCleaner.clean(t, ScrubMode.STRICT).cleaned.any { Character.getType(it) == Character.FORMAT.toInt() })
+    }
 }

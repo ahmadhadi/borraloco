@@ -226,6 +226,16 @@ object TextCleaner {
                         oddSpaces++
                     }
                 }
+                // Any other "format" character (Unicode category Cf), such as the Arabic number signs U+0600..0605 or the
+                // end-of-ayah mark U+06DD: usually part of Arabic text, so listed and kept, removed by STRICT.
+                !isInvisibleCandidate(cp) && Character.getType(cp) == Character.FORMAT.toInt() -> {
+                    if (strict) {
+                        invisible++
+                    } else {
+                        out.appendCodePoint(cp)
+                        kept.merge(cp, 1, Int::plus)
+                    }
+                }
                 isInvisibleCandidate(cp) -> {
                     if (isLegitimate(cps, i, hasRtl, strict)) {
                         out.appendCodePoint(cp)
