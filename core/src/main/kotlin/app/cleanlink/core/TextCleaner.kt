@@ -19,6 +19,13 @@ enum class MarkKind {
     /** Unusual space characters (thin space, em space, …) that can carry a pattern; replaced by a normal space. */
     ODD_SPACES,
 
+    /**
+     * Characters that look invisible but were kept because they normally belong to the text (a right-to-left mark
+     * in Arabic, a joiner in Persian, a no-break space before a number…). Listed so the person can see them,
+     * and removed by [ScrubMode.STRICT].
+     */
+    KEPT_CHARS,
+
     /** Chatbot citation markers such as ChatGPT's private-use citations or Gemini's `[cite: 1]`. */
     CHAT_CITATIONS,
 }
@@ -47,6 +54,13 @@ enum class ScrubMode {
 
     /** Visible chatbot citation markers only. */
     CITATIONS,
+
+    /**
+     * Like [HIDDEN], but also removes invisible characters that normally belong to the text: bidirectional marks,
+     * no-break and CJK spaces, Mongolian/Khmer/CGJ marks. Still keeps what would visibly break: emoji sequences,
+     * flags, ZWNJ/ZWJ between Arabic/Persian/Indic letters, ideographic variation selectors.
+     */
+    STRICT,
 }
 
 /**
@@ -76,7 +90,8 @@ object TextCleaner {
         if (text.isEmpty()) return TextScrubResult(text, text, emptyList())
         return when (mode) {
             ScrubMode.CITATIONS -> scrubCitations(text)
-            ScrubMode.HIDDEN -> scrubHidden(text)
+            ScrubMode.HIDDEN -> scrubHidden(text, strict = false)
+            ScrubMode.STRICT -> scrubHidden(text, strict = true)
         }
     }
 
@@ -173,7 +188,7 @@ object TextCleaner {
 
     // ---- invisible characters ---------------------------------------------------------------
 
-    private fun scrubHidden(original: String): TextScrubResult {
+    private fun scrubHidden(original: String, strict: Boolean): TextScrubResult {
         val findings = mutableListOf<MarkFinding>()
 
         val (afterC2pa, c2paCount) = stripC2pa(original)
@@ -189,6 +204,7 @@ object TextCleaner {
         val tagMessage = StringBuilder()
         var invisible = 0
         var oddSpaces = 0
+        val kept = java.util.TreeMap<Int, Int>()
 
         for (i in cps.indices) {
             val cp = cps[i]
@@ -202,10 +218,23 @@ object TextCleaner {
                     }
                 }
                 isOddSpace(cp) -> {
-                    if (keepSpace(cps, i)) out.appendCodePoint(cp) else { out.append(' '); oddSpaces++ }
+                    if (!strict && keepSpace(cps, i)) {
+                        out.appendCodePoint(cp)
+                        kept.merge(cp, 1, Int::plus)
+                    } else {
+                        out.append(' ')
+                        oddSpaces++
+                    }
                 }
                 isInvisibleCandidate(cp) -> {
-                    if (isLegitimate(cps, i, hasRtl)) out.appendCodePoint(cp) else invisible++
+                    if (isLegitimate(cps, i, hasRtl, strict)) {
+                        out.appendCodePoint(cp)
+                        if (cp != 0xFE0E && cp != 0xFE0F && !(cp == 0x200D && emojiAround(cps, i)) && !isVariationSelectorByte(cp)) {
+                            kept.merge(cp, 1, Int::plus)
+                        }
+                    } else {
+                        invisible++
+                    }
                 }
                 else -> out.appendCodePoint(cp)
             }
@@ -214,6 +243,10 @@ object TextCleaner {
         if (tagMessage.isNotBlank()) findings += MarkFinding(MarkKind.HIDDEN_MESSAGE, 1, tagMessage.toString().shorten())
         if (invisible > 0) findings += MarkFinding(MarkKind.INVISIBLE_CHARS, invisible)
         if (oddSpaces > 0) findings += MarkFinding(MarkKind.ODD_SPACES, oddSpaces)
+        if (kept.isNotEmpty()) {
+            val list = kept.entries.joinToString(", ") { "U+%04X ×%d".format(it.key, it.value) }
+            findings += MarkFinding(MarkKind.KEPT_CHARS, kept.values.sum(), list.shorten())
+        }
         // A VSRMark's selectors are counted as invisible characters too; keep the report to one line for it.
         return TextScrubResult(original, out.toString(), findings)
     }
@@ -243,7 +276,7 @@ object TextCleaner {
             (isInvisibleCandidate(cps[i]) || cps[i] in 0xE0000..0xE007F)
 
     /** True when the invisible-looking character at [i] belongs to the text and must stay. */
-    private fun isLegitimate(cps: IntArray, i: Int, hasRtl: Boolean): Boolean {
+    private fun isLegitimate(cps: IntArray, i: Int, hasRtl: Boolean, strict: Boolean): Boolean {
         val cp = cps[i]
         // A neighbour that is also invisible means a run, and a run is never ordinary text.
         val isolated = !isInvisibleAt(cps, i - 1) && !isInvisibleAt(cps, i + 1)
@@ -262,12 +295,20 @@ object TextCleaner {
             0x200C -> isolated && isJoiningScript(prev) && isJoiningScript(next)
             // Bidirectional controls matter only in right-to-left text.
             0x200E, 0x200F, 0x061C, 0x202A, 0x202B, 0x202C, 0x202D, 0x202E, 0x2066, 0x2067, 0x2068, 0x2069 ->
-                hasRtl && isolated
-            0x180B, 0x180C, 0x180D, 0x180F -> isolated && prev in 0x1800..0x18AF
-            0x17B4, 0x17B5 -> isolated && (prev in 0x1780..0x17FF || next in 0x1780..0x17FF)
-            0x034F -> isolated && (isHebrewOrArabic(prev) || isHebrewOrArabic(next))
+                hasRtl && isolated && !strict
+            0x180B, 0x180C, 0x180D, 0x180F -> !strict && isolated && prev in 0x1800..0x18AF
+            0x17B4, 0x17B5 -> !strict && isolated && (prev in 0x1780..0x17FF || next in 0x1780..0x17FF)
+            0x034F -> !strict && isolated && (isHebrewOrArabic(prev) || isHebrewOrArabic(next))
             else -> false
         }
+    }
+
+    private fun emojiAround(cps: IntArray, i: Int): Boolean {
+        var l = i - 1
+        while (l >= 0 && (cps[l] == 0xFE0E || cps[l] == 0xFE0F || cps[l] in 0x1F3FB..0x1F3FF)) l--
+        var r = i + 1
+        while (r < cps.size && (cps[r] == 0xFE0E || cps[r] == 0xFE0F || cps[r] in 0x1F3FB..0x1F3FF)) r++
+        return (l >= 0 && isEmojiBase(cps[l])) || (r < cps.size && isEmojiBase(cps[r]))
     }
 
     /** A ZWJ stays when it joins two emoji (skipping selectors and skin-tone modifiers) or two joining-script letters. */

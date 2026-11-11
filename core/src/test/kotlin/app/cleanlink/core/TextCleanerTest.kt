@@ -194,4 +194,25 @@ class TextCleanerTest {
         val t = "a​b [cite: 1]"
         assertEquals(setOf(MarkKind.INVISIBLE_CHARS, MarkKind.CHAT_CITATIONS), kinds(t).toSet())
     }
+
+    // ---- kept characters are reported, strict mode removes them -------------------------------------
+
+    @Test fun keptCharactersAreListedAndStrictModeRemovesThem() {
+        val t = "مرحبا\u200F بالعالم \u200F10\u00A0km"
+        val r = hidden(t)
+        assertEquals(t, r.cleaned)
+        val f = r.findings.single { it.kind == MarkKind.KEPT_CHARS }
+        assertEquals(3, f.count)
+        assertTrue(f.detail!!.contains("U+200F ×2"))
+        assertTrue(f.detail!!.contains("U+00A0 ×1"))
+        val strict = TextCleaner.clean(t, ScrubMode.STRICT)
+        assertEquals("مرحبا بالعالم 10 km", strict.cleaned)
+        assertFalse(strict.findings.any { it.kind == MarkKind.KEPT_CHARS })
+    }
+
+    @Test fun strictModeStillKeepsEmojiFlagsAndPersianJoiners() {
+        val t = "I \u2764\uFE0F you \uD83D\uDC68\u200D\uD83D\uDC69 \u0645\u06CC\u200C\u062E\u0648\u0627\u0647\u0645"
+        assertEquals(t, TextCleaner.clean(t, ScrubMode.STRICT).cleaned)
+        assertTrue(hidden(t).findings.none { it.kind == MarkKind.KEPT_CHARS && it.detail!!.contains("FE0F") })
+    }
 }

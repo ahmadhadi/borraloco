@@ -106,4 +106,6 @@
     <string name="nothing_to_clean">No links or hidden marks found in this text.</string>
     <string name="way_text_title">Clean text</string>
     <string name="way_text_body">Paste any text. Buttons appear only for what is in it: links to clean, or hidden marks to remove (provenance data, invisible characters, hidden messages, chatbot citations). Watermarks built into the choice of words (such as SynthID) cannot be removed this way.</string>
+    <string name="mark_kept">Invisible characters that normally belong to the text (kept): %1$d — %2$s</string>
+    <string name="remove_strict">Remove these too</string>
 </resources>

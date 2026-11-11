@@ -34,6 +34,7 @@ private fun label(f: MarkFinding): String = when (f.kind) {
     MarkKind.INVISIBLE_CHARS -> stringResource(R.string.mark_invisible, f.count)
     MarkKind.ODD_SPACES -> stringResource(R.string.mark_spaces, f.count)
     MarkKind.CHAT_CITATIONS -> stringResource(R.string.mark_citations, f.count)
+    MarkKind.KEPT_CHARS -> stringResource(R.string.mark_kept, f.count, f.detail.orEmpty())
 }
 
 /**
@@ -45,9 +46,11 @@ fun TextMarksCard(
     findings: List<MarkFinding>,
     onRemoveHidden: () -> Unit,
     onRemoveCitations: () -> Unit,
+    onRemoveStrict: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val hidden = findings.filter { it.kind != MarkKind.CHAT_CITATIONS }
+    val hidden = findings.filter { it.kind != MarkKind.CHAT_CITATIONS && it.kind != MarkKind.KEPT_CHARS }
+    val kept = findings.filter { it.kind == MarkKind.KEPT_CHARS }
     val citations = findings.filter { it.kind == MarkKind.CHAT_CITATIONS }
     Column(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -55,13 +58,17 @@ fun TextMarksCard(
             Spacer(Modifier.width(8.dp))
             Text(stringResource(R.string.marks_found), style = MaterialTheme.typography.titleSmall)
         }
-        for (f in hidden + citations) {
+        for (f in hidden + kept + citations) {
             Text("• " + label(f), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             if (hidden.isNotEmpty()) Button(onClick = onRemoveHidden) { Text(stringResource(R.string.remove_hidden)) }
+            if (kept.isNotEmpty()) {
+                if (hidden.isEmpty()) Button(onClick = onRemoveStrict) { Text(stringResource(R.string.remove_strict)) }
+                else OutlinedButton(onClick = onRemoveStrict) { Text(stringResource(R.string.remove_strict)) }
+            }
             if (citations.isNotEmpty()) {
-                val outlined = hidden.isNotEmpty()
+                val outlined = hidden.isNotEmpty() || kept.isNotEmpty()
                 if (outlined) OutlinedButton(onClick = onRemoveCitations) { Text(stringResource(R.string.remove_citations)) }
                 else Button(onClick = onRemoveCitations) { Text(stringResource(R.string.remove_citations)) }
             }

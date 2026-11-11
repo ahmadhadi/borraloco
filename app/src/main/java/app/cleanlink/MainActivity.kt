@@ -201,6 +201,7 @@ private fun HomeScreen(updates: UpdateController) {
                     findings = marks,
                     onRemoveHidden = { scrub(ScrubMode.HIDDEN) },
                     onRemoveCitations = { scrub(ScrubMode.CITATIONS) },
+                    onRemoveStrict = { scrub(ScrubMode.STRICT) },
                 )
             }
             scrubbed?.let { r ->

@@ -27,6 +27,11 @@ right-to-left text, ideographic variation selectors after CJK characters, no-bre
 and French-style punctuation, ideographic spaces in CJK text. **Two or more invisible characters in a row
 are never treated as legitimate** and are removed.
 
+Kept characters are **listed by code point** (for example `U+200F ×12`) so you can see exactly what is
+there, with a **Remove these too** button for people who want everything invisible gone. It removes
+bidirectional marks, no-break and CJK spaces; it still keeps emoji sequences, flags and joiners between
+Arabic/Persian/Indic letters, because removing those visibly breaks the text.
+
 ## What this does not do
 
 - **Word-choice watermarks** (Google SynthID-Text, KGW and similar) live in which words were chosen.
