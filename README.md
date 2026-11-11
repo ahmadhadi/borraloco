@@ -27,6 +27,7 @@ https://www.temu.com/earbuds-g-601099527781234.html?_x_sessn_id=…&refer_page_n
 | **Text selection** | Select a link, choose *Clean link*. In an editable text box the link is replaced in place. |
 | **Quick Settings tile** | Copy a link, tap the tile: the clean link replaces it on the clipboard. |
 | **Copy caption** | In the app, paste an Instagram post/reel or TikTok video link and tap "Copy caption": the public caption is read from the platform and copied. Public posts only. No extra Share-menu entry. |
+| **Clean text** | In the app, paste any text. Buttons appear only for what it contains: *Clean links* when there are links, *Remove hidden marks* when it has C2PA data, zero-width characters, hidden messages or odd spaces, *Remove citation markers* for chatbot citations. Offline; see [docs/features/clean-text.md](docs/features/clean-text.md). |
 | **Clean every link I open** (optional) | BorraLoco registers as a browser. Set it as the default browser and every tapped link is cleaned, then forwarded to the real browser, or to the platform's own app. |
 | **In the app** | Paste any text; every link in it is cleaned. |
 | **Updates** | On launch the app checks GitHub Releases and offers to download and install a new version. |

@@ -7,10 +7,10 @@
     <string name="clip_label">رابط نظيف</string>
     <string name="tagline">أزل أدوات التتبع من الروابط قبل مشاركتها.</string>
 
-    <string name="clean_a_link">تنظيف رابط</string>
-    <string name="input_label">الصق رابطًا أو أي نص يحتوي على روابط</string>
-    <string name="paste_and_clean">لصق وتنظيف</string>
-    <string name="clean">تنظيف</string>
+    <string name="clean_a_link">تنظيف رابط أو نص</string>
+    <string name="input_label">الصق رابطًا أو أي نص</string>
+    <string name="paste_and_clean">لصق</string>
+    <string name="clean">تنظيف الروابط</string>
     <string name="clear">مسح</string>
     <string name="copy">نسخ</string>
     <string name="share">مشاركة</string>
@@ -94,4 +94,19 @@
 
     <string name="platform_instagram">إنستغرام</string>
     <string name="platform_tiktok">تيك توك</string>
+
+    <!-- علامات مخفية في النص -->
+    <string name="marks_found">عُثر على علامات مخفية</string>
+    <string name="mark_c2pa">بيانات المصدر (C2PA) مخفية في النص</string>
+    <string name="mark_vsr">علامة مائية مخفية (VSRMark): %1$s</string>
+    <string name="mark_message">رسالة مخفية: %1$s</string>
+    <string name="mark_invisible">محارف غير مرئية: %1$d</string>
+    <string name="mark_spaces">مسافات غير معتادة: %1$d</string>
+    <string name="mark_citations">علامات اقتباس روبوتات الدردشة: %1$d</string>
+    <string name="remove_hidden">إزالة العلامات المخفية</string>
+    <string name="remove_citations">إزالة علامات الاقتباس</string>
+    <string name="text_cleaned">تم تنظيف النص</string>
+    <string name="nothing_to_clean">لم يُعثر على روابط أو علامات مخفية في هذا النص.</string>
+    <string name="way_text_title">تنظيف النص</string>
+    <string name="way_text_body">الصق أي نص. تظهر الأزرار فقط لما يحتويه: روابط للتنظيف، أو علامات مخفية للإزالة (بيانات المصدر، محارف غير مرئية، رسائل مخفية، اقتباسات روبوتات الدردشة). العلامات المائية المدمجة في اختيار الكلمات (مثل SynthID) لا يمكن إزالتها بهذه الطريقة.</string>
 </resources>

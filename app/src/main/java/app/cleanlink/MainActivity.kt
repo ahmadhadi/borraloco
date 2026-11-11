@@ -45,7 +45,12 @@ import app.cleanlink.core.TextCleanResult
 import app.cleanlink.ui.CleanLinkTheme
 import app.cleanlink.core.CaptionFetcher
 import app.cleanlink.core.CaptionResult
+import app.cleanlink.core.ScrubMode
+import app.cleanlink.core.TextCleaner
+import app.cleanlink.core.TextScrubResult
 import app.cleanlink.core.UrlExtractor
+import app.cleanlink.ui.TextMarksCard
+import app.cleanlink.ui.TextScrubResultView
 import app.cleanlink.ui.CaptionView
 import app.cleanlink.ui.CleanResultView
 import kotlinx.coroutines.Dispatchers
@@ -95,7 +100,19 @@ private fun HomeScreen(updates: UpdateController) {
     var captioning by remember { mutableStateOf(false) }
     val captionFetcher = remember { CaptionFetcher() }
     // The first Instagram / TikTok post link in the box, if any: that is what "Copy caption" reads.
-    val captionLink = remember(input) { UrlExtractor.extract(input).firstOrNull { CaptionFetcher.platformOf(it) != null } }
+    val urls = remember(input) { UrlExtractor.extract(input).toList() }
+    val captionLink = remember(input) { urls.firstOrNull { CaptionFetcher.platformOf(it) != null } }
+    // Hidden marks in the text (invisible characters, provenance data, chatbot citations…).
+    val marks = remember(input) { TextCleaner.inspect(input) }
+    var scrubbed by remember { mutableStateOf<TextScrubResult?>(null) }
+
+    fun scrub(mode: ScrubMode) {
+        val r = TextCleaner.clean(input, mode)
+        input = r.cleaned
+        result = null
+        captioning = false
+        scrubbed = r
+    }
 
     fun copyCaption() {
         val link = captionLink ?: return
@@ -142,7 +159,7 @@ private fun HomeScreen(updates: UpdateController) {
         Section(stringResource(R.string.clean_a_link)) {
             OutlinedTextField(
                 value = input,
-                onValueChange = { input = it; result = null; captioning = false },
+                onValueChange = { input = it; result = null; captioning = false; scrubbed = null },
                 label = { Text(stringResource(R.string.input_label)) },
                 minLines = 3,
                 modifier = Modifier.fillMaxWidth(),
@@ -153,20 +170,51 @@ private fun HomeScreen(updates: UpdateController) {
                     val text = clip?.takeIf { it.itemCount > 0 }?.getItemAt(0)?.coerceToText(context)?.toString()
                     if (!text.isNullOrBlank()) {
                         input = text
-                        clean()
+                        scrubbed = null
+                        result = null
+                        captioning = false
+                        // Links are cleaned straight away, as before; hidden marks wait for a tap.
+                        if (UrlExtractor.extract(text).iterator().hasNext()) clean()
                     }
                 }) { Text(stringResource(R.string.paste_and_clean)) }
-                Button(onClick = { clean() }, enabled = input.isNotBlank() && !cleaning) {
-                    Text(stringResource(R.string.clean))
-                }
                 if (input.isNotEmpty()) {
-                    TextButton(onClick = { input = ""; result = null; captioning = false }) { Text(stringResource(R.string.clear)) }
+                    TextButton(onClick = { input = ""; result = null; captioning = false; scrubbed = null }) { Text(stringResource(R.string.clear)) }
                 }
             }
-            if (captionLink != null) {
-                OutlinedButton(onClick = { copyCaption() }, enabled = !captioning || caption != null) {
-                    Text(stringResource(R.string.caption_label))
+
+            // Buttons appear only for what the text contains.
+            if (urls.isNotEmpty() || captionLink != null) {
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    if (urls.isNotEmpty()) {
+                        Button(onClick = { clean() }, enabled = !cleaning) { Text(stringResource(R.string.clean)) }
+                    }
+                    if (captionLink != null) {
+                        OutlinedButton(onClick = { copyCaption() }, enabled = !captioning || caption != null) {
+                            Text(stringResource(R.string.caption_label))
+                        }
+                    }
                 }
+            }
+            if (marks.isNotEmpty()) {
+                HorizontalDivider()
+                TextMarksCard(
+                    findings = marks,
+                    onRemoveHidden = { scrub(ScrubMode.HIDDEN) },
+                    onRemoveCitations = { scrub(ScrubMode.CITATIONS) },
+                )
+            }
+            scrubbed?.let { r ->
+                HorizontalDivider()
+                if (r.changed) {
+                    TextScrubResultView(r, onCopy = { LinkActions.copy(context, it) }, onShare = { LinkActions.share(context, it) })
+                }
+            }
+            if (input.isNotBlank() && urls.isEmpty() && marks.isEmpty() && scrubbed == null) {
+                Text(
+                    stringResource(R.string.nothing_to_clean),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
             }
             if (captioning) {
                 HorizontalDivider()
@@ -193,6 +241,7 @@ private fun HomeScreen(updates: UpdateController) {
             Way(stringResource(R.string.way_select_title), stringResource(R.string.way_select_body))
             Way(stringResource(R.string.way_tile_title), stringResource(R.string.way_tile_body))
             Way(stringResource(R.string.way_caption_title), stringResource(R.string.way_caption_body))
+            Way(stringResource(R.string.way_text_title), stringResource(R.string.way_text_body))
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 val tileLabel = stringResource(R.string.tile_label)
                 OutlinedButton(onClick = {

@@ -8,10 +8,10 @@
     <string name="clip_label">Clean link</string>
     <string name="tagline">Remove trackers from links before you share them.</string>
 
-    <string name="clean_a_link">Clean a link</string>
-    <string name="input_label">Paste a link, or any text with links</string>
-    <string name="paste_and_clean">Paste &amp; clean</string>
-    <string name="clean">Clean</string>
+    <string name="clean_a_link">Clean a link or text</string>
+    <string name="input_label">Paste a link, or any text</string>
+    <string name="paste_and_clean">Paste</string>
+    <string name="clean">Clean links</string>
     <string name="clear">Clear</string>
     <string name="copy">Copy</string>
     <string name="share">Share</string>
@@ -91,4 +91,19 @@
 
     <string name="platform_instagram">Instagram</string>
     <string name="platform_tiktok">TikTok</string>
+
+    <!-- Hidden marks in text -->
+    <string name="marks_found">Hidden marks found</string>
+    <string name="mark_c2pa">Provenance data (C2PA) hidden in the text</string>
+    <string name="mark_vsr">Hidden watermark (VSRMark): %1$s</string>
+    <string name="mark_message">Hidden message: %1$s</string>
+    <string name="mark_invisible">Invisible characters: %1$d</string>
+    <string name="mark_spaces">Unusual spaces: %1$d</string>
+    <string name="mark_citations">Chatbot citation markers: %1$d</string>
+    <string name="remove_hidden">Remove hidden marks</string>
+    <string name="remove_citations">Remove citation markers</string>
+    <string name="text_cleaned">Text cleaned</string>
+    <string name="nothing_to_clean">No links or hidden marks found in this text.</string>
+    <string name="way_text_title">Clean text</string>
+    <string name="way_text_body">Paste any text. Buttons appear only for what is in it: links to clean, or hidden marks to remove (provenance data, invisible characters, hidden messages, chatbot citations). Watermarks built into the choice of words (such as SynthID) cannot be removed this way.</string>
 </resources>
