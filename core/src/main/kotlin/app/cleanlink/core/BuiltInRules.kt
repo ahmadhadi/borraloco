@@ -16,6 +16,8 @@ object BuiltInRules {
         // Ad click IDs
         "fbclid", "gclid", "gclsrc", "dclid", "gbraid", "wbraid", "msclkid", "yclid", "ttclid",
         "twclid", "li_fat_id", "epik", "ScCid", "rdt_cid", "irclickid", "_kx",
+        // Google Ads / Shopping landing-page tags
+        "gad_source", "gad_campaignid", "gclaw", "gcldc", "srsltid",
         // Social share IDs that leak onto other sites
         "igshid", "igsh", "mibextid",
         // Email / marketing automation
@@ -244,6 +246,10 @@ object BuiltInRules {
         RedirectRule("Instagram", listOf("l.instagram.com"), "/?.*", listOf("u")),
         RedirectRule("Threads", listOf("l.threads.net", "l.threads.com"), "/?.*", listOf("u")),
         RedirectRule("Google", listOf("google.*"), "/url", listOf("q", "url")),
+        // Google Ads click links: the advertiser's page is in adurl (last, often not percent-encoded).
+        // When adurl is empty (as in links copied from some ads) there is nothing to unwrap offline;
+        // the link is then a "short link" below and is followed instead.
+        RedirectRule("Google Ads", listOf("google.*", "googleadservices.com"), "/aclk|/pagead/aclk", listOf("adurl"), restOfQuery = true),
         RedirectRule("YouTube", listOf("youtube.com"), "/redirect", listOf("q")),
         RedirectRule("Reddit", listOf("out.reddit.com"), "/.*", listOf("url")),
         RedirectRule("LinkedIn", listOf("linkedin.com"), "/redir/redirect/?", listOf("url")),
@@ -265,6 +271,10 @@ object BuiltInRules {
 
     private val SHORTENERS = listOf(
         // Platform shorteners
+        // Google Ads click links without a destination in the link (adurl empty): only following the
+        // redirect reveals the advertiser's page. This is the click the ad would have recorded anyway.
+        ShortenerRule("google.*", "/aclk|/pagead/aclk"),
+        ShortenerRule("googleadservices.com", "/pagead/aclk"),
         ShortenerRule("t.co"),
         ShortenerRule("spotify.link"),
         ShortenerRule("spoti.fi"),

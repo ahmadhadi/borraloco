@@ -118,3 +118,28 @@ campaign tracker ID, shared by everyone who gets a link from the same share camp
 | Parameter | What it is | Action |
 |---|---|---|
 | `a`, `s`, `t` | Share-attribution codes; `t` encodes the sharer's account. | remove |
+
+## Google Ads click links (`google.com/aclk`, `googleadservices.com/pagead/aclk`)
+
+The link you get when you copy an ad from Google Search or Shopping. It is not the advertiser's page; it is a
+click-registration hop that redirects to it.
+
+| Parameter | Meaning |
+|---|---|
+| `sa` | Source of the click (`L` = ad link). Removed. |
+| `ai` | Encoded ad/auction id. Kept: the ad server needs it to find the advertiser. |
+| `co`, `cce`, `ctype`, `sph`, `q` | Click flags / type; harmless, kept (tied to `sig`). |
+| `cid` | Long encoded click record (campaign, creative, query). Kept. |
+| `gclid` | Google click id, ties your click to your Google account's ad profile. Removed. |
+| `sig` | Signature over the other fields. Kept: without it Google refuses the link. |
+| `ved` | Google result-click tracking. Removed. |
+| `adurl` | The advertiser's landing page, **always last and often not percent-encoded**, so its own `&a=b` look like extra parameters of the Google link. |
+
+Landing pages then carry `gclid`, `gad_source`, `gad_campaignid`, `gclaw`, `gcldc`, `srsltid` (all removed now).
+
+How BorraLoco handles it:
+
+1. `adurl` present: the destination is unwrapped offline (everything after `adurl=` is the destination) and cleaned. No request is made.
+2. `adurl` empty (common in links copied from the app): nothing can be unwrapped offline. The link is treated as a short link and, if "Expand short links" is on, followed to the advertiser's page, which is then cleaned. **Following it registers an ad click for the advertiser** (the same click the ad would have recorded). With expansion off, only `sa`, `gclid`, `ved` are removed and the link stays functional.
+
+Verified with unit tests and simulated redirects; not verified against live Google.

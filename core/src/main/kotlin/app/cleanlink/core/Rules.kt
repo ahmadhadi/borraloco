@@ -69,12 +69,17 @@ class SiteRule(
 /**
  * A redirect wrapper such as `l.facebook.com/l.php?u=<real url>`.
  * The real destination is taken from the first of [params] that holds an http(s) URL.
+ *
+ * [restOfQuery]: the wrapper puts the destination last and does NOT percent-encode it, so the
+ * destination's own `&a=b` parameters look like extra parameters of the wrapper (Google Ads
+ * `adurl=https://shop.example/p?id=7&gad_source=1`). Then everything after `param=` belongs to it.
  */
 class RedirectRule(
     val name: String,
     hosts: List<String>,
     pathRegex: String,
     val params: List<String>,
+    val restOfQuery: Boolean = false,
 ) {
     val hosts = hosts.map(::HostPattern)
     val path = Regex(pathRegex, RegexOption.IGNORE_CASE)
@@ -82,10 +87,20 @@ class RedirectRule(
     fun unwrap(url: ParsedUrl): String? {
         if (hosts.none { it.matches(url.host) } || !path.matches(url.path)) return null
         for (name in params) {
-            val target = url.param(name)?.value?.trim() ?: continue
+            val param = url.param(name) ?: continue
+            val target = (if (restOfQuery) withRestOfQuery(url, param) else param.value)?.trim() ?: continue
             if (ParsedUrl.parse(target) != null) return target
         }
         return null
+    }
+
+    /** An unencoded `http(s)://…` value plus every parameter after it; an encoded one is just decoded. */
+    private fun withRestOfQuery(url: ParsedUrl, param: QueryParam): String? {
+        val raw = param.rawValue ?: return null
+        if (!raw.startsWith("http://", ignoreCase = true) && !raw.startsWith("https://", ignoreCase = true)) return param.value
+        val all = url.query ?: return raw
+        val after = all.drop(all.indexOf(param) + 1)
+        return (listOf(raw) + after.map { it.raw }).joinToString("&")
     }
 }
 

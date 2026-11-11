@@ -426,4 +426,65 @@ class LinkCleanerTest {
         // Must return instead of spinning forever.
         loop.clean("https://bit.ly/a", expandShortLinks = true)
     }
+
+    // ---- Google Ads click links (/aclk) -----------------------------------------------------------
+
+    private val aclkNoDestination =
+        "https://www.google.com/aclk?sa=L&ai=DChsSEwj9k9D71_-XAxUpsYMHHb_BMCYYACICCAEQHhoCZWY&co=1&gclid=Cj0KCQiAwdDXBhDuARIsAFdLukl0Swm6&sph=" +
+            "&cid=CAASywLkaJKGwLdp7sYRADQsW2RuU9Xp9TVnCN2pPFrB7_q547R&cce=1&sig=AOD64_14BfLveHKLpCqv8bqb-Ctc3wPQDw&ctype=70&q=" +
+            "&ved=2ahUKEwic5sn71_-XAxW48bsIHWXEMNsQwg8oAHoECAwQGw&adurl="
+
+    @Test fun googleAdsLinkWithUnencodedDestinationTakesEverythingAfterAdurl() {
+        val shop = "https://shop.example.com/p/7?color=red&gad_source=1&gad_campaignid=2233&gclid=ABC&utm_source=google"
+        assertEquals(
+            "https://shop.example.com/p/7?color=red",
+            cleaner.clean("https://www.google.com/aclk?sa=L&ai=X&co=1&gclid=ABC&sig=Z&adurl=$shop").cleaned,
+        )
+        assertEquals(
+            "https://shop.example.com/p/7?id=9",
+            cleaner.clean("https://www.googleadservices.com/pagead/aclk?sa=L&adurl=https://shop.example.com/p/7?id=9&gclid=Q").cleaned,
+        )
+    }
+
+    @Test fun googleAdsLinkWithEncodedDestination() {
+        assertEquals(
+            "https://shop.example.com/p/7?id=9",
+            cleaner.clean("https://www.google.com.sa/aclk?sa=L&ai=X&sig=Z&adurl=https%3A%2F%2Fshop.example.com%2Fp%2F7%3Fid%3D9%26gclid%3DABC%26gad_source%3D5").cleaned,
+        )
+    }
+
+    @Test fun googleAdsLinkWithoutDestinationIsFollowedWhenAllowed() {
+        assertTrue(cleaner.isShortLink(aclkNoDestination))
+        val landing = "https://shop.example.com/product?id=7&gclid=ABC&gad_source=5&gad_campaignid=123&utm_source=google&srsltid=xyz"
+        val viaGoogle = LinkCleaner(resolver = RedirectResolver { if (it.startsWith("https://www.google.com/aclk")) landing else null })
+        val r = viaGoogle.clean(aclkNoDestination, expandShortLinks = true)
+        assertEquals("https://shop.example.com/product?id=7", r.cleaned)
+        assertTrue(r.expanded)
+        // Two hops, through googleadservices first.
+        val twoHops = LinkCleaner(
+            resolver = RedirectResolver {
+                when {
+                    it.startsWith("https://www.google.com/aclk") -> "https://www.googleadservices.com/pagead/aclk?sa=L&ai=1&sig=2"
+                    it.startsWith("https://www.googleadservices.com/pagead/aclk") -> landing
+                    else -> null
+                }
+            },
+        )
+        assertEquals("https://shop.example.com/product?id=7", twoHops.clean(aclkNoDestination, expandShortLinks = true).cleaned)
+    }
+
+    @Test fun googleAdsLinkWithoutDestinationIsOnlyLightlyCleanedWhenNotFollowed() {
+        val r = cleaner.clean(aclkNoDestination)
+        assertTrue(r.unexpandedShortLink)
+        assertEquals(listOf("sa", "gclid", "ved"), r.removed)
+        // What the ad server needs to find the advertiser stays, so the link is not silently broken.
+        assertTrue("ai=" in r.cleaned && "cid=" in r.cleaned && "sig=" in r.cleaned)
+    }
+
+    @Test fun otherGoogleLinksAreUnaffected() {
+        assertCleans("https://www.google.com/search?q=cats&sxsrf=ABC&ved=0ahUKEw&ei=xyz", "https://www.google.com/search?q=cats")
+        assertCleans("https://www.google.com/url?q=https://example.org/page&sa=D&usg=AOvVaw", "https://example.org/page")
+        assertCleans("https://example.com/p?id=3&gad_source=1&gad_campaignid=9&srsltid=AfmBO", "https://example.com/p?id=3")
+        assertTrue(!cleaner.isShortLink("https://www.google.com/search?q=aclk"))
+    }
 }
