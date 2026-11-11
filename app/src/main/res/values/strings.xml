@@ -108,4 +108,6 @@
     <string name="way_text_body">Paste any text. Buttons appear only for what is in it: links to clean, or hidden marks to remove (provenance data, invisible characters, hidden messages, chatbot citations). Watermarks built into the choice of words (such as SynthID) cannot be removed this way.</string>
     <string name="mark_kept">Invisible characters that normally belong to the text (kept): %1$d — %2$s</string>
     <string name="remove_strict">Remove these too</string>
+    <string name="home_hint">Paste a link or any text. Only the buttons that apply to it will appear.</string>
+    <string name="back">Back</string>
 </resources>

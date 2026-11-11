@@ -4,14 +4,32 @@ import android.app.StatusBarManager
 import android.content.ClipboardManager
 import android.content.ComponentName
 import android.content.Intent
-import android.graphics.drawable.Icon
+import android.graphics.drawable.Icon as AndroidIcon
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.selection.toggleable
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.semantics.Role
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -93,6 +111,9 @@ private fun HomeScreen(updates: UpdateController) {
     val settings = remember { AppSettings(context) }
     val scope = rememberCoroutineScope()
 
+    var showSettings by rememberSaveable { mutableStateOf(false) }
+    BackHandler(enabled = showSettings) { showSettings = false }
+
     var input by remember { mutableStateOf("") }
     var result by remember { mutableStateOf<TextCleanResult?>(null) }
     var cleaning by remember { mutableStateOf(false) }
@@ -143,184 +164,248 @@ private fun HomeScreen(updates: UpdateController) {
             .fillMaxSize()
             .safeDrawingPadding()
             .verticalScroll(rememberScrollState())
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+            .padding(horizontal = 20.dp, vertical = 12.dp),
+        verticalArrangement = Arrangement.spacedBy(20.dp),
     ) {
-        Column(Modifier.padding(horizontal = 4.dp, vertical = 8.dp)) {
-            Text(stringResource(R.string.app_name), style = MaterialTheme.typography.headlineMedium)
-            Text(
-                stringResource(R.string.tagline),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+        if (showSettings) {
+            SettingsPage(updates = updates, settings = settings, onBack = { showSettings = false })
+            return@Column
         }
 
-        // ---- Manual cleaning ----
-        Section(stringResource(R.string.clean_a_link)) {
-            OutlinedTextField(
-                value = input,
-                onValueChange = { input = it; result = null; captioning = false; scrubbed = null },
-                label = { Text(stringResource(R.string.input_label)) },
-                minLines = 3,
-                modifier = Modifier.fillMaxWidth(),
-            )
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedButton(onClick = {
-                    val clip = context.getSystemService(ClipboardManager::class.java).primaryClip
-                    val text = clip?.takeIf { it.itemCount > 0 }?.getItemAt(0)?.coerceToText(context)?.toString()
-                    if (!text.isNullOrBlank()) {
-                        input = text
-                        scrubbed = null
-                        result = null
-                        captioning = false
-                        // Links are cleaned straight away, as before; hidden marks wait for a tap.
-                        if (UrlExtractor.extract(text).iterator().hasNext()) clean()
-                    }
-                }) { Text(stringResource(R.string.paste_and_clean)) }
-                if (input.isNotEmpty()) {
-                    TextButton(onClick = { input = ""; result = null; captioning = false; scrubbed = null }) { Text(stringResource(R.string.clear)) }
-                }
+        // ---- Header: name, one-line promise, settings ----
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Column(Modifier.weight(1f)) {
+                Text(stringResource(R.string.app_name), style = MaterialTheme.typography.headlineMedium)
+                Text(
+                    stringResource(R.string.tagline),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
             }
+            IconButton(onClick = { showSettings = true }) {
+                Icon(Icons.Filled.Settings, contentDescription = stringResource(R.string.settings_title))
+            }
+        }
 
-            // Buttons appear only for what the text contains.
-            if (urls.isNotEmpty() || captionLink != null) {
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    if (urls.isNotEmpty()) {
-                        Button(onClick = { clean() }, enabled = !cleaning) { Text(stringResource(R.string.clean)) }
+        // ---- One input; actions appear only for what the text contains ----
+        Card(Modifier.fillMaxWidth().animateContentSize()) {
+            Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                OutlinedTextField(
+                    value = input,
+                    onValueChange = { input = it; result = null; captioning = false; scrubbed = null },
+                    label = { Text(stringResource(R.string.input_label)) },
+                    minLines = 4,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Button(
+                        onClick = {
+                            val clip = context.getSystemService(ClipboardManager::class.java).primaryClip
+                            val text = clip?.takeIf { it.itemCount > 0 }?.getItemAt(0)?.coerceToText(context)?.toString()
+                            if (!text.isNullOrBlank()) {
+                                input = text
+                                scrubbed = null
+                                result = null
+                                captioning = false
+                                // Links are cleaned straight away; hidden marks wait for a tap.
+                                if (UrlExtractor.extract(text).isNotEmpty()) clean()
+                            }
+                        },
+                        modifier = Modifier.heightIn(min = 48.dp),
+                    ) { Text(stringResource(R.string.paste_and_clean)) }
+                    if (input.isNotEmpty()) {
+                        TextButton(
+                            onClick = { input = ""; result = null; captioning = false; scrubbed = null },
+                            modifier = Modifier.heightIn(min = 48.dp),
+                        ) { Text(stringResource(R.string.clear)) }
                     }
-                    if (captionLink != null) {
-                        OutlinedButton(onClick = { copyCaption() }, enabled = !captioning || caption != null) {
-                            Text(stringResource(R.string.caption_label))
+                }
+
+                AnimatedVisibility(
+                    visible = input.isBlank(),
+                    enter = fadeIn() + expandVertically(),
+                    exit = fadeOut() + shrinkVertically(),
+                ) {
+                    Text(
+                        stringResource(R.string.home_hint),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+
+                // Links found → link actions
+                AnimatedVisibility(
+                    visible = urls.isNotEmpty(),
+                    enter = fadeIn() + expandVertically(),
+                    exit = fadeOut() + shrinkVertically(),
+                ) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Button(
+                            onClick = { clean() },
+                            enabled = !cleaning,
+                            modifier = Modifier.heightIn(min = 48.dp),
+                        ) { Text(stringResource(R.string.clean)) }
+                        if (captionLink != null) {
+                            OutlinedButton(
+                                onClick = { copyCaption() },
+                                enabled = !captioning || caption != null,
+                                modifier = Modifier.heightIn(min = 48.dp),
+                            ) { Text(stringResource(R.string.caption_label)) }
                         }
                     }
                 }
-            }
-            if (marks.isNotEmpty()) {
-                HorizontalDivider()
-                TextMarksCard(
-                    findings = marks,
-                    onRemoveHidden = { scrub(ScrubMode.HIDDEN) },
-                    onRemoveCitations = { scrub(ScrubMode.CITATIONS) },
-                    onRemoveStrict = { scrub(ScrubMode.STRICT) },
-                )
-            }
-            scrubbed?.let { r ->
-                HorizontalDivider()
-                if (r.changed) {
+
+                // Hidden marks found → text actions
+                AnimatedVisibility(
+                    visible = marks.isNotEmpty(),
+                    enter = fadeIn() + expandVertically(),
+                    exit = fadeOut() + shrinkVertically(),
+                ) {
+                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        HorizontalDivider()
+                        TextMarksCard(
+                            findings = marks,
+                            onRemoveHidden = { scrub(ScrubMode.HIDDEN) },
+                            onRemoveCitations = { scrub(ScrubMode.CITATIONS) },
+                            onRemoveStrict = { scrub(ScrubMode.STRICT) },
+                        )
+                    }
+                }
+
+                scrubbed?.takeIf { it.changed }?.let { r ->
+                    HorizontalDivider()
                     TextScrubResultView(r, onCopy = { LinkActions.copy(context, it) }, onShare = { LinkActions.share(context, it) })
                 }
-            }
-            if (input.isNotBlank() && urls.isEmpty() && marks.isEmpty() && scrubbed == null) {
-                Text(
-                    stringResource(R.string.nothing_to_clean),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-            if (captioning) {
-                HorizontalDivider()
-                CaptionView(
-                    result = caption,
-                    platform = CaptionFetcher.platformOf(captionLink ?: "") ?: app.cleanlink.core.CaptionPlatform.INSTAGRAM,
-                    onCopy = { LinkActions.copy(context, it) },
-                    onShare = { LinkActions.share(context, it) },
-                )
-            } else if (cleaning || result != null) {
-                HorizontalDivider()
-                CleanResultView(
-                    result = result,
-                    onCopy = { LinkActions.copy(context, it) },
-                    onShare = { LinkActions.share(context, it) },
-                    onOpen = { LinkActions.open(context, it) },
-                )
+
+                if (input.isNotBlank() && urls.isEmpty() && marks.isEmpty() && scrubbed == null) {
+                    Text(
+                        stringResource(R.string.nothing_to_clean),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+
+                if (captioning) {
+                    HorizontalDivider()
+                    CaptionView(
+                        result = caption,
+                        platform = CaptionFetcher.platformOf(captionLink ?: "") ?: app.cleanlink.core.CaptionPlatform.INSTAGRAM,
+                        onCopy = { LinkActions.copy(context, it) },
+                        onShare = { LinkActions.share(context, it) },
+                    )
+                } else if (cleaning || result != null) {
+                    HorizontalDivider()
+                    CleanResultView(
+                        result = result,
+                        onCopy = { LinkActions.copy(context, it) },
+                        onShare = { LinkActions.share(context, it) },
+                        onOpen = { LinkActions.open(context, it) },
+                    )
+                }
             }
         }
+    }
+}
 
-        // ---- How to use ----
-        Section(stringResource(R.string.ways_title)) {
-            Way(stringResource(R.string.way_share_title), stringResource(R.string.way_share_body))
-            Way(stringResource(R.string.way_select_title), stringResource(R.string.way_select_body))
-            Way(stringResource(R.string.way_tile_title), stringResource(R.string.way_tile_body))
-            Way(stringResource(R.string.way_caption_title), stringResource(R.string.way_caption_body))
-            Way(stringResource(R.string.way_text_title), stringResource(R.string.way_text_body))
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                val tileLabel = stringResource(R.string.tile_label)
-                OutlinedButton(onClick = {
+/** Everything that is not the daily task: settings, help, supported sites, version. */
+@Composable
+private fun SettingsPage(updates: UpdateController, settings: AppSettings, onBack: () -> Unit) {
+    val context = LocalContext.current
+
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        IconButton(onClick = onBack) {
+            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
+        }
+        Text(stringResource(R.string.settings_title), style = MaterialTheme.typography.headlineSmall)
+    }
+
+    Section(stringResource(R.string.settings_title)) {
+        var expand by remember { mutableStateOf(settings.expandShortLinks) }
+        var copyAndClose by remember { mutableStateOf(settings.copyAndClose) }
+        var intercept by remember { mutableStateOf(settings.interceptLinks) }
+
+        SettingSwitch(
+            title = stringResource(R.string.setting_expand_title),
+            body = stringResource(R.string.setting_expand_body),
+            checked = expand,
+            onChange = { expand = it; settings.expandShortLinks = it },
+        )
+        SettingSwitch(
+            title = stringResource(R.string.setting_copy_title),
+            body = stringResource(R.string.setting_copy_body),
+            checked = copyAndClose,
+            onChange = { copyAndClose = it; settings.copyAndClose = it },
+        )
+        SettingSwitch(
+            title = stringResource(R.string.setting_intercept_title),
+            body = stringResource(R.string.setting_intercept_body),
+            checked = intercept,
+            onChange = { intercept = it; settings.interceptLinks = it },
+        )
+        if (intercept) {
+            TextButton(
+                onClick = { context.startActivity(Intent(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS)) },
+                modifier = Modifier.heightIn(min = 48.dp),
+            ) { Text(stringResource(R.string.open_default_apps)) }
+        }
+
+        HorizontalDivider()
+        var autoUpdate by remember { mutableStateOf(settings.autoCheckUpdates) }
+        SettingSwitch(
+            title = stringResource(R.string.setting_updates_title),
+            body = stringResource(R.string.setting_updates_body),
+            checked = autoUpdate,
+            onChange = { autoUpdate = it; settings.autoCheckUpdates = it },
+        )
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                stringResource(R.string.current_version, remember { Updater.currentVersion(context) }),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.weight(1f),
+            )
+            val checking = updates.state == UpdateState.Checking
+            OutlinedButton(
+                onClick = { updates.check(manual = true) },
+                enabled = !checking,
+                modifier = Modifier.heightIn(min = 48.dp),
+            ) { Text(stringResource(if (checking) R.string.update_checking else R.string.update_check_now)) }
+        }
+    }
+
+    Section(stringResource(R.string.ways_title)) {
+        Way(stringResource(R.string.way_share_title), stringResource(R.string.way_share_body))
+        Way(stringResource(R.string.way_select_title), stringResource(R.string.way_select_body))
+        Way(stringResource(R.string.way_tile_title), stringResource(R.string.way_tile_body))
+        Way(stringResource(R.string.way_caption_title), stringResource(R.string.way_caption_body))
+        Way(stringResource(R.string.way_text_title), stringResource(R.string.way_text_body))
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val tileLabel = stringResource(R.string.tile_label)
+            OutlinedButton(
+                onClick = {
                     context.getSystemService(StatusBarManager::class.java).requestAddTileService(
                         ComponentName(context, CleanClipboardTileService::class.java),
                         tileLabel,
-                        Icon.createWithResource(context, R.drawable.ic_tile),
+                        AndroidIcon.createWithResource(context, R.drawable.ic_tile),
                         context.mainExecutor,
                     ) { }
-                }) { Text(stringResource(R.string.add_tile)) }
-            }
+                },
+                modifier = Modifier.heightIn(min = 48.dp),
+            ) { Text(stringResource(R.string.add_tile)) }
         }
+    }
 
-        // ---- Settings ----
-        Section(stringResource(R.string.settings_title)) {
-            var expand by remember { mutableStateOf(settings.expandShortLinks) }
-            var copyAndClose by remember { mutableStateOf(settings.copyAndClose) }
-            var intercept by remember { mutableStateOf(settings.interceptLinks) }
-
-            SettingSwitch(
-                title = stringResource(R.string.setting_expand_title),
-                body = stringResource(R.string.setting_expand_body),
-                checked = expand,
-                onChange = { expand = it; settings.expandShortLinks = it },
-            )
-            SettingSwitch(
-                title = stringResource(R.string.setting_copy_title),
-                body = stringResource(R.string.setting_copy_body),
-                checked = copyAndClose,
-                onChange = { copyAndClose = it; settings.copyAndClose = it },
-            )
-            SettingSwitch(
-                title = stringResource(R.string.setting_intercept_title),
-                body = stringResource(R.string.setting_intercept_body),
-                checked = intercept,
-                onChange = { intercept = it; settings.interceptLinks = it },
-            )
-            if (intercept) {
-                TextButton(onClick = {
-                    context.startActivity(Intent(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS))
-                }) { Text(stringResource(R.string.open_default_apps)) }
-            }
-
-            HorizontalDivider()
-            var autoUpdate by remember { mutableStateOf(settings.autoCheckUpdates) }
-            SettingSwitch(
-                title = stringResource(R.string.setting_updates_title),
-                body = stringResource(R.string.setting_updates_body),
-                checked = autoUpdate,
-                onChange = { autoUpdate = it; settings.autoCheckUpdates = it },
-            )
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    stringResource(R.string.current_version, remember { Updater.currentVersion(context) }),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.weight(1f),
-                )
-                val checking = updates.state == UpdateState.Checking
-                OutlinedButton(onClick = { updates.check(manual = true) }, enabled = !checking) {
-                    Text(stringResource(if (checking) R.string.update_checking else R.string.update_check_now))
-                }
-            }
-        }
-
-        // ---- Supported platforms ----
-        Section(stringResource(R.string.supported_title)) {
-            Text(
-                Cleaner.supportedPlatforms.joinToString(" · "),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            Text(
-                stringResource(R.string.supported_note),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
+    Section(stringResource(R.string.supported_title)) {
+        Text(
+            Cleaner.supportedPlatforms.joinToString(" · "),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Text(
+            stringResource(R.string.supported_note),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }
 
@@ -338,17 +423,25 @@ private fun Section(title: String, content: @Composable () -> Unit) {
 private fun Way(title: String, body: String) {
     Column {
         Text(title, style = MaterialTheme.typography.labelLarge)
-        Text(body, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(body, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
 
+/** The whole row toggles (a 48 dp+ target that TalkBack reads as one switch), not just the small switch. */
 @Composable
 private fun SettingSwitch(title: String, body: String, checked: Boolean, onChange: (Boolean) -> Unit) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .heightIn(min = 56.dp)
+            .toggleable(value = checked, role = Role.Switch, onValueChange = onChange)
+            .padding(vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
         Column(Modifier.weight(1f).padding(end = 12.dp)) {
             Text(title, style = MaterialTheme.typography.bodyLarge)
-            Text(body, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(body, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
-        Switch(checked = checked, onCheckedChange = onChange)
+        Switch(checked = checked, onCheckedChange = null)
     }
 }
